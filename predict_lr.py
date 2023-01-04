@@ -168,7 +168,7 @@ def main(opt):
 
     # output meta information
     if opt.info:
-        for key in clr_info.keys():
+        for key in clr_info:
             opt.outfile.write("#classifier_{}={}\n".format(key, str(clr_info[key])))
 
         for key, key_val in vars(opt).items():

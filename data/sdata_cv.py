@@ -311,12 +311,12 @@ def main(opt, arg):
 
     # Output ----------------------------------------------------------------------
     if opt.arff:
-        for key in info.keys():
+        for key in info:
             outfile.write("% {}={}\n".format(key, str(info[key])))
         d.write_arff(outfile)
     else:
         d.write_txt(outfile)
-        for key in info.keys():
+        for key in info:
             outfile.write("# {}={}\n".format(key, str(info[key])))
 
     # End Process -----------------------------------------------------------------
