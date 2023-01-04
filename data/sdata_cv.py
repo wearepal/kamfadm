@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
+r"""
 
 Generate Artificial Data Set for Discrimination/Fairness-aware learning
 
@@ -116,7 +115,7 @@ info = {}
 # ==============================================================================
 
 
-class AData(object):
+class AData:
     """Artificial Data Generator for Fairness-aware Learning
 
     :IVariables:
@@ -219,7 +218,7 @@ class AData(object):
 
         f.write("% pl=" + str(self.pl) + "\n")
         f.write("% ps=" + str(self.ps) + "\n")
-        f.write("%% pc=[%s, %s]\n" % (str(self.pc[0, :]), str(self.pc[1, :])))
+        f.write("% pc=[{}, {}]\n".format(str(self.pc[0, :]), str(self.pc[1, :])))
         for i in range(self.f):
             f.write(
                 "%% pa[%d]=[%s, %s]\n"
@@ -262,7 +261,7 @@ class AData(object):
         # write parameters
         f.write("# pl=" + str(self.pl) + "\n")
         f.write("# ps=" + str(self.ps) + "\n")
-        f.write("# pc=[%s, %s]\n" % (str(self.pc[0, :]), str(self.pc[1, :])))
+        f.write("# pc=[{}, {}]\n".format(str(self.pc[0, :]), str(self.pc[1, :])))
         for i in range(self.f):
             f.write(
                 "# pa[%d]=[%s, %s]\n"
@@ -313,12 +312,12 @@ def main(opt, arg):
     # Output ----------------------------------------------------------------------
     if opt.arff:
         for key in info.keys():
-            outfile.write("%% %s=%s\n" % (key, str(info[key])))
+            outfile.write("% {}={}\n".format(key, str(info[key])))
         d.write_arff(outfile)
     else:
         d.write_txt(outfile)
         for key in info.keys():
-            outfile.write("# %s=%s\n" % (key, str(info[key])))
+            outfile.write("# {}={}\n".format(key, str(info[key])))
 
     # End Process -----------------------------------------------------------------
     if outfile != sys.stdout:

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 import from 50b745c1d18d5c4b01d9d00e406b5fdaab3515ea @ KamLearn
 

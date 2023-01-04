@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Add quadratic terms to tab/comma/space separated data
 
@@ -152,7 +151,7 @@ def main(opt):
 
     except IndexError:
         sys.exit("Parse error in line %d" % line_no)
-    except IOError:
+    except OSError:
         sys.exit("File error in line %d" % line_no)
 
     ### post process

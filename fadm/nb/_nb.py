@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 import from 50b745c1d18d5c4b01d9d00e406b5fdaab3515ea @ KamLearn
 
@@ -44,7 +43,7 @@ __all__ = [
 # ==============================================================================
 
 
-class BayesianClassifierMixin(object):
+class BayesianClassifierMixin:
     """Mix-in for Probabilistic Classifiers"""
 
     def predict(self, X):
@@ -186,7 +185,7 @@ class GaussianNaiveBayes(BaseNaiveBayes):
 
     def __init__(self, n_classes, n_gfeatures, alpha=1.0):
 
-        super(GaussianNaiveBayes, self).__init__(n_classes, n_gfeatures, alpha)
+        super().__init__(n_classes, n_gfeatures, alpha)
         self._init_Gaussian_naive_Bayes(n_gfeatures)
 
     def _init_Gaussian_naive_Bayes(self, n_gfeatures):
@@ -373,7 +372,7 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
 
     def __init__(self, n_classes, n_mfeatures, nfv, alpha=1.0, beta=1.0):
         # init base class
-        super(MultinomialNaiveBayes, self).__init__(n_classes, n_mfeatures, alpha)
+        super().__init__(n_classes, n_mfeatures, alpha)
         self._init_Multinomial_naive_Bayes(n_mfeatures, np.array(nfv), beta)
 
     def _init_Multinomial_naive_Bayes(self, n_mfeatures, nfv, beta):

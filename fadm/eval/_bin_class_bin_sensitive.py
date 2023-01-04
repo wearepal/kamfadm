@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Compute various types of fairness-aware indexes.
 """
@@ -75,14 +74,12 @@ class BinClassBinSensitiveStats(BinClassStats):
         self.m = m
         self.s = np.sum(self.m, axis=0)
 
-        super(BinClassBinSensitiveStats, self).__init__(
-            self.s[1, 1], self.s[1, 0], self.s[0, 1], self.s[0, 0]
-        )
+        super().__init__(self.s[1, 1], self.s[1, 0], self.s[0, 1], self.s[0, 0])
 
     def negate(self):
         """Negate the meanings of positive and negative classes."""
 
-        super(BinClassBinSensitiveStats, self).negate()
+        super().negate()
 
         for s in [0, 1]:
             self.m[s, 1, 1], self.m[s, 0, 0] = self.m[s, 0, 0], self.m[s, 1, 1]
@@ -128,10 +125,18 @@ class BinClassBinSensitiveStats(BinClassStats):
         pr = []
         if header:
             pr.append("### Contingency Table with Sensitive Attribute ###")
-        pr.append("S=0 [ TP(1,1), FN(1,0) ] = [ %6.15g, %6.15g ]" % (m[0], m[1]))
-        pr.append("    [ FP(0,1), TN(0,0) ] = [ %6.15g, %6.15g ]" % (m[2], m[3]))
-        pr.append("S=1 [ TP(1,1), FN(1,0) ] = [ %6.15g, %6.15g ]" % (m[4], m[5]))
-        pr.append("    [ FP(0,1), TN(0,0) ] = [ %6.15g, %6.15g ]" % (m[6], m[7]))
+        pr.append(
+            "S=0 [ TP(1,1), FN(1,0) ] = [ {:6.15g}, {:6.15g} ]".format(m[0], m[1])
+        )
+        pr.append(
+            "    [ FP(0,1), TN(0,0) ] = [ {:6.15g}, {:6.15g} ]".format(m[2], m[3])
+        )
+        pr.append(
+            "S=1 [ TP(1,1), FN(1,0) ] = [ {:6.15g}, {:6.15g} ]".format(m[4], m[5])
+        )
+        pr.append(
+            "    [ FP(0,1), TN(0,0) ] = [ {:6.15g}, {:6.15g} ]".format(m[6], m[7])
+        )
 
         return pr
 
@@ -188,10 +193,14 @@ class BinClassBinSensitiveStats(BinClassStats):
         if header:
             pr.append("### KL Divergence ###")
         pr.append(
-            "[ D(C||E), D(E||C) ] with ln   = [ %.15g, %.15g ]" % (kldivc, kldive)
+            "[ D(C||E), D(E||C) ] with ln   = [ {:.15g}, {:.15g} ]".format(
+                kldivc, kldive
+            )
         )
         pr.append(
-            "[ D(C||E), D(E||C) ] with log2 = [ %.15g, %.15g ]" % (kldivc2, kldive2)
+            "[ D(C||E), D(E||C) ] with log2 = [ {:.15g}, {:.15g} ]".format(
+                kldivc2, kldive2
+            )
         )
 
         return pr
@@ -253,7 +262,9 @@ class BinClassBinSensitiveStats(BinClassStats):
         if header:
             pr.append("### Mutual Information (Correct, Sensitive) ###")
         pr.append("I(C;S) = %.15g" % (mi))
-        pr.append("[ I(C;S)/H(C), I(C;ES)/H(S) ] = [ %.15g, %.15g ]" % (nmic, nmis))
+        pr.append(
+            "[ I(C;S)/H(C), I(C;ES)/H(S) ] = [ {:.15g}, {:.15g} ]".format(nmic, nmis)
+        )
         pr.append("Arithmetic Mean = %.15g" % (amean))
         pr.append("Geometric Mean = %.15g" % (gmean))
 
@@ -316,7 +327,9 @@ class BinClassBinSensitiveStats(BinClassStats):
         if header:
             pr.append("### Mutual Information (Estimated, Sensitive) ###")
         pr.append("I(C;S) = %.15g" % (mi))
-        pr.append("[ I(C;S)/H(C), I(C;ES)/H(S) ] = [ %.15g, %.15g ]" % (nmie, nmis))
+        pr.append(
+            "[ I(C;S)/H(C), I(C;ES)/H(S) ] = [ {:.15g}, {:.15g} ]".format(nmie, nmis)
+        )
         pr.append("Arithmetic Mean = %.15g" % (amean))
         pr.append("Geometric Mean = %.15g" % (gmean))
 
@@ -484,7 +497,7 @@ class BinClassBinSensitiveStats(BinClassStats):
             list of all statistics
         """
 
-        stats = super(BinClassBinSensitiveStats, self).all()
+        stats = super().all()
 
         stats += self.sct()
         stats += self.mics()

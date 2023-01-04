@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
+r"""
 Kamishima's synthetic data generator
 
 (e1, e2) \sim Normal([0,0], [[1, rho], [rho, 1]])

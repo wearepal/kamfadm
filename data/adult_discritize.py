@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Discretize *adult* data
 
@@ -208,11 +207,11 @@ def main(opt, arg):
     # open input file
     if opt.input == None:
         if len(arg) > 0:
-            infile = open(arg.pop(0), "r")
+            infile = open(arg.pop(0))
         else:
             infile = sys.stdin
     else:
-        infile = open(opt.input, "r")
+        infile = open(opt.input)
 
     # open output file
     if opt.output == None:

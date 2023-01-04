@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Two Class logistic regression module with Prejudice Remover
 
@@ -903,9 +902,7 @@ class LRwPRType4(
 
     def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType4, self).__init__(
-            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
-        )
+        super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
         self.coef_ = None
         self.mx_ = None
@@ -933,9 +930,7 @@ class LRwPRType5(
 
     def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType5, self).__init__(
-            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
-        )
+        super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
         self.coef_ = None
         self.mx_ = None
@@ -963,9 +958,7 @@ class LRwPRType6(
 
     def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType6, self).__init__(
-            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
-        )
+        super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
         self.coef_ = None
         self.mx_ = None
@@ -993,9 +986,7 @@ class LRwPRType7(
 
     def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType7, self).__init__(
-            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
-        )
+        super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
         self.coef_ = None
         self.mx_ = None
@@ -1023,9 +1014,7 @@ class LRwPRType8(
 
     def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType8, self).__init__(
-            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
-        )
+        super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
         self.coef_ = None
         self.mx_ = None
@@ -1053,9 +1042,7 @@ class LRwPRType9(
 
     def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType9, self).__init__(
-            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
-        )
+        super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
         self.coef_ = None
         self.mx_ = None
@@ -1083,9 +1070,7 @@ class LRwPRType10(
 
     def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType10, self).__init__(
-            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
-        )
+        super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
         self.coef_ = None
         self.mx_ = None
@@ -1113,9 +1098,7 @@ class LRwPRType11(
 
     def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType11, self).__init__(
-            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
-        )
+        super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
         self.coef_ = None
         self.mx_ = None

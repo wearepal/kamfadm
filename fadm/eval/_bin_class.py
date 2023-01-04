@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 import from 50b745c1d18d5c4b01d9d00e406b5fdaab3515ea @ KamLearn
 
@@ -38,7 +37,7 @@ __all__ = ["BinClassStats"]
 # ==============================================================================
 
 
-class BinClassStats(object):
+class BinClassStats:
     """Compute various statistics of 2class sample data
 
     Parameters
@@ -131,8 +130,8 @@ class BinClassStats(object):
         pr = []
         if header:
             pr.append("### Contingency Table ###")
-        pr.append("[ TP(1,1), FN(1,0) ] = [ %6.15g, %6.15g ]" % (tp, fn))
-        pr.append("[ FP(0,1), TN(0,0) ] = [ %6.15g, %6.15g ]" % (fp, tn))
+        pr.append("[ TP(1,1), FN(1,0) ] = [ {:6.15g}, {:6.15g} ]".format(tp, fn))
+        pr.append("[ FP(0,1), TN(0,0) ] = [ {:6.15g}, {:6.15g} ]".format(fp, tn))
 
         return pr
 
@@ -174,8 +173,8 @@ class BinClassStats(object):
         pr = []
         if header:
             pr.append("### Marginal/Total Counts ###")
-        pr.append("True [ P, N ] = [ %6.15g, %6.15g ]" % (cp, cn))
-        pr.append("Est  [ P, N ] = [ %6.15g, %6.15g ]" % (ep, en))
+        pr.append("True [ P, N ] = [ {:6.15g}, {:6.15g} ]".format(cp, cn))
+        pr.append("Est  [ P, N ] = [ {:6.15g}, {:6.15g} ]".format(ep, en))
         pr.append("Total       = %.15g" % (t))
 
         return pr
@@ -215,7 +214,7 @@ class BinClassStats(object):
         pr = []
         if header:
             pr.append("### Accuracy ###")
-        pr.append("Acc / S.D. = [ %.15g, %.15g ]" % (acc, sd))
+        pr.append("Acc / S.D. = [ {:.15g}, {:.15g} ]".format(acc, sd))
 
         return pr
 
@@ -260,8 +259,8 @@ class BinClassStats(object):
         pr = []
         if header:
             pr.append("### Jaccard / Dice Coefficients ###")
-        pr.append("Jaccard [ P, N ] = [ %.15g, %.15g ]" % (jaccard, njaccard))
-        pr.append("Dice    [ P, N ] = [ %.15g, %.15g ]" % (dice, ndice))
+        pr.append("Jaccard [ P, N ] = [ {:.15g}, {:.15g} ]".format(jaccard, njaccard))
+        pr.append("Dice    [ P, N ] = [ {:.15g}, {:.15g} ]".format(dice, ndice))
 
         return pr
 
@@ -318,10 +317,14 @@ class BinClassStats(object):
         if header:
             pr.append("### KL Divergence ###")
         pr.append(
-            "[ D(C||E), D(E||C) ] with ln   = [ %.15g, %.15g ]" % (kldivc, kldive)
+            "[ D(C||E), D(E||C) ] with ln   = [ {:.15g}, {:.15g} ]".format(
+                kldivc, kldive
+            )
         )
         pr.append(
-            "[ D(C||E), D(E||C) ] with log2 = [ %.15g, %.15g ]" % (kldivc2, kldive2)
+            "[ D(C||E), D(E||C) ] with log2 = [ {:.15g}, {:.15g} ]".format(
+                kldivc2, kldive2
+            )
         )
 
         return pr
@@ -381,7 +384,9 @@ class BinClassStats(object):
         if header:
             pr.append("### Mutual Information (natual log) ###")
         pr.append("I(C;E) = %.15g" % (mi))
-        pr.append("[ I(C;E)/H(C), I(C;E)/H(E) ] = [ %.15g, %.15g ]" % (nmic, nmie))
+        pr.append(
+            "[ I(C;E)/H(C), I(C;E)/H(E) ] = [ {:.15g}, {:.15g} ]".format(nmic, nmie)
+        )
         pr.append("Arithmetic Mean = %.15g" % (amean))
         pr.append("Geometric Mean = %.15g" % (gmean))
 
@@ -442,7 +447,9 @@ class BinClassStats(object):
         if header:
             pr.append("### Mutual Information (log2) ###")
         pr.append("I(C;E) = %.15g" % (mi))
-        pr.append("[ I(C;E)/H(C), I(C;E)/H(E) ] = [ %.15g, %.15g ]" % (nmic, nmie))
+        pr.append(
+            "[ I(C;E)/H(C), I(C;E)/H(E) ] = [ {:.15g}, {:.15g} ]".format(nmic, nmie)
+        )
         pr.append("Arithmetic Mean = %.15g" % (amean))
         pr.append("Geometric Mean = %.15g" % (gmean))
 

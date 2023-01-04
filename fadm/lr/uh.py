@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Two Class logistic regression module with Unfairness Hater
 
@@ -78,7 +77,7 @@ def sigmoid(x, w):
 # ==============================================================================
 
 
-class LikelihoodType1Mixin(object):
+class LikelihoodType1Mixin:
     """mixin for singe type 1 likelihood
 
     Parameters
@@ -207,7 +206,7 @@ class LogisticRegressionWithUnfairnessHater(BaseEstimator, ClassifierMixin):
 class LogisticRegressionWithUnfairnessHaterType1(
     LogisticRegressionWithUnfairnessHater, LikelihoodType1Mixin
 ):
-    """Two class LogisticRegression with Unfairness Hater
+    r"""Two class LogisticRegression with Unfairness Hater
 
     Loss function type 1: sensitive feature is included in the model of
     Pr[y | x, s]
@@ -230,9 +229,7 @@ class LogisticRegressionWithUnfairnessHaterType1(
 
     def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LogisticRegressionWithUnfairnessHaterType1, self).__init__(
-            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
-        )
+        super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
         lossfunc_type = 1
 
     def loss(self, coef, X, y, ns):
@@ -324,7 +321,7 @@ class LogisticRegressionWithUnfairnessHaterType1(
 class LogisticRegressionWithUnfairnessHaterType2(
     LogisticRegressionWithUnfairnessHater, LikelihoodType1Mixin
 ):
-    """Two class LogisticRegression with Unfairness Hater
+    r"""Two class LogisticRegression with Unfairness Hater
 
     Loss function type 2: sensitive feature is excluded in the model of
     Pr[y | x, s].
@@ -347,9 +344,7 @@ class LogisticRegressionWithUnfairnessHaterType2(
 
     def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LogisticRegressionWithUnfairnessHaterType2, self).__init__(
-            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
-        )
+        super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
         lossfunc_type = 2
 
     def loss(self, coef, X, y, ns):

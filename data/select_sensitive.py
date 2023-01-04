@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Move the specified features to the last position
 
@@ -85,11 +84,11 @@ def main(opt, arg):
     # open input file
     if opt.input == None:
         if len(arg) > 0:
-            infile = open(arg.pop(0), "r")
+            infile = open(arg.pop(0))
         else:
             infile = sys.stdin
     else:
-        infile = open(opt.input, "r")
+        infile = open(opt.input)
 
     # open output file
     if opt.output == None:
@@ -133,7 +132,7 @@ def main(opt, arg):
             outfile.write(opt.dl.join(out) + "\n")
         except IndexError:
             sys.exit("Parse error in line %d" % (line_no))
-        except IOError:
+        except OSError:
             break
 
     # Output ----------------------------------------------------------------------

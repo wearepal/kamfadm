@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Predict classes for naive Bayes model
 
@@ -148,10 +147,10 @@ def main(opt):
     end_utime = os.times()[0]
     logger.info("end time = " + end_time.isoformat())
     opt.end_time = end_time.isoformat()
-    logger.info("elapsed_time = " + str((end_time - start_time)))
-    opt.elapsed_time = str((end_time - start_time))
-    logger.info("elapsed_utime = " + str((end_utime - start_utime)))
-    opt.elapsed_utime = str((end_utime - start_utime))
+    logger.info("elapsed_time = " + str(end_time - start_time))
+    opt.elapsed_time = str(end_time - start_time)
+    logger.info("elapsed_utime = " + str(end_utime - start_utime))
+    opt.elapsed_utime = str(end_utime - start_utime)
 
     ### output
 
@@ -170,10 +169,10 @@ def main(opt):
     # output meta information
     if opt.info:
         for key in clr_info.keys():
-            opt.outfile.write("#classifier_%s=%s\n" % (key, str(clr_info[key])))
+            opt.outfile.write("#classifier_{}={}\n".format(key, str(clr_info[key])))
 
         for key, key_val in vars(opt).items():
-            opt.outfile.write("#%s=%s\n" % (key, str(key_val)))
+            opt.outfile.write("#{}={}\n".format(key, str(key_val)))
 
     ### post process
 
