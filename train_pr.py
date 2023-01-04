@@ -78,7 +78,17 @@ site.addsitedir(".")
 from fadm import __version__ as fadm_version
 from sklearn import __version__ as sklearn_version
 from fadm.util import fill_missing_with_mean
-from fadm.lr.pr import *
+from fadm.lr.pr import (
+    LRwPRType4,
+    LRwPRType5,
+    LRwPRType6,
+    LRwPRType7,
+    LRwPRType8,
+    LRwPRType9,
+    LRwPRType10,
+    LRwPRType11,
+)
+
 
 # ==============================================================================
 # Public symbols

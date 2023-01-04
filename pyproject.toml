@@ -1,0 +1,24 @@
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "Kamishima", email = "mail@kamishima.net"},
+]
+dependencies = ["numpy", "scikit-learn"]
+requires-python = ">=3.8"
+
+[tool.ruff]
+extend-select = ["SIM", "UP"]
+ignore = ["E501"]
+target-version = "py38"
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F403"]
+
+[tool.pdm]
+[tool.pdm.dev-dependencies]
+dev = []
+
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
