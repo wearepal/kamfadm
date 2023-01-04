@@ -4,17 +4,14 @@
 Compute various types of fairness-aware indexes.
 """
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals
 
-#==============================================================================
+# ==============================================================================
 # Module metadata variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Imports
-#==============================================================================
+# ==============================================================================
 
 import logging
 import numpy as np
@@ -22,30 +19,32 @@ import numpy as np
 # private modules -------------------------------------------------------------
 
 import site
-site.addsitedir('.')
+
+site.addsitedir(".")
 
 from ._bin_class import BinClassStats
 
-#==============================================================================
+# ==============================================================================
 # Public symbols
-#==============================================================================
+# ==============================================================================
 
-__all__ = ['BinClassBinSensitiveStats']
+__all__ = ["BinClassBinSensitiveStats"]
 
-#==============================================================================
-#{ Constants
-#==============================================================================
+# ==============================================================================
+# { Constants
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Module variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Classes
-#==============================================================================
+# ==============================================================================
+
 
 class BinClassBinSensitiveStats(BinClassStats):
-    """ Calculate fairness-aware indexes where.
+    """Calculate fairness-aware indexes where.
 
     Parameters
     ----------
@@ -76,12 +75,12 @@ class BinClassBinSensitiveStats(BinClassStats):
         self.m = m
         self.s = np.sum(self.m, axis=0)
 
-        super(BinClassBinSensitiveStats, self)\
-            .__init__(self.s[1, 1], self.s[1, 0], self.s[0, 1], self.s[0, 0])
+        super(BinClassBinSensitiveStats, self).__init__(
+            self.s[1, 1], self.s[1, 0], self.s[0, 1], self.s[0, 0]
+        )
 
     def negate(self):
-        """ Negate the meanings of positive and negative classes.
-        """
+        """Negate the meanings of positive and negative classes."""
 
         super(BinClassBinSensitiveStats, self).negate()
 
@@ -91,7 +90,7 @@ class BinClassBinSensitiveStats(BinClassStats):
         self.s = np.sum(self.m, axis=0)
 
     def sct(self):
-        """ Contingency table with sensitive attribute.
+        """Contingency table with sensitive attribute.
 
         Returns
         -------
@@ -99,13 +98,19 @@ class BinClassBinSensitiveStats(BinClassStats):
             Contingency table with sensitive attribute.
         """
 
-        return self.m[0, 1, 1], self.m[0, 1, 0], \
-               self.m[0, 0, 1], self.m[0, 0, 0], \
-               self.m[1, 1, 1], self.m[1, 1, 0], \
-               self.m[1, 0, 1], self.m[1, 0, 0]
+        return (
+            self.m[0, 1, 1],
+            self.m[0, 1, 0],
+            self.m[0, 0, 1],
+            self.m[0, 0, 0],
+            self.m[1, 1, 1],
+            self.m[1, 1, 0],
+            self.m[1, 0, 1],
+            self.m[1, 0, 0],
+        )
 
     def str_sct(self, header=True):
-        """ Strings for sct()
+        """Strings for sct()
 
         Parameters
         ----------
@@ -123,19 +128,15 @@ class BinClassBinSensitiveStats(BinClassStats):
         pr = []
         if header:
             pr.append("### Contingency Table with Sensitive Attribute ###")
-        pr.append("S=0 [ TP(1,1), FN(1,0) ] = [ %6.15g, %6.15g ]" % \
-                  (m[0], m[1]))
-        pr.append("    [ FP(0,1), TN(0,0) ] = [ %6.15g, %6.15g ]" % \
-                  (m[2], m[3]))
-        pr.append("S=1 [ TP(1,1), FN(1,0) ] = [ %6.15g, %6.15g ]" % \
-                  (m[4], m[5]))
-        pr.append("    [ FP(0,1), TN(0,0) ] = [ %6.15g, %6.15g ]" % \
-                  (m[6], m[7]))
+        pr.append("S=0 [ TP(1,1), FN(1,0) ] = [ %6.15g, %6.15g ]" % (m[0], m[1]))
+        pr.append("    [ FP(0,1), TN(0,0) ] = [ %6.15g, %6.15g ]" % (m[2], m[3]))
+        pr.append("S=1 [ TP(1,1), FN(1,0) ] = [ %6.15g, %6.15g ]" % (m[4], m[5]))
+        pr.append("    [ FP(0,1), TN(0,0) ] = [ %6.15g, %6.15g ]" % (m[6], m[7]))
 
         return pr
 
     def kldiv(self):
-        """ KL divergence
+        """KL divergence
 
         Returns
         -------
@@ -153,26 +154,22 @@ class BinClassBinSensitiveStats(BinClassStats):
             KL divergence from estimated distribution to correct distribution
         """
 
-        i = lambda n, m: 0.0 if n == 0.0 else \
-            np.inf if m == 0.0 else n * np.log(n / m)
+        i = lambda n, m: 0.0 if n == 0.0 else np.inf if m == 0.0 else n * np.log(n / m)
 
-        kldivc = (i(self.c[0], self.e[0]) + i(self.c[1], self.e[1])) \
-            / self.t
-        kldive = (i(self.e[0], self.c[0]) + i(self.e[1], self.c[1])) \
-            / self.t
+        kldivc = (i(self.c[0], self.e[0]) + i(self.c[1], self.e[1])) / self.t
+        kldive = (i(self.e[0], self.c[0]) + i(self.e[1], self.c[1])) / self.t
 
-        i2 = lambda n, m: 0.0 if n == 0.0 else \
-            np.inf if m == 0.0 else n * np.log2(n / m)
+        i2 = (
+            lambda n, m: 0.0 if n == 0.0 else np.inf if m == 0.0 else n * np.log2(n / m)
+        )
 
-        kldivc2 = (i2(self.c[0], self.e[0]) + i2(self.c[1], self.e[1])) \
-            / self.t
-        kldive2 = (i2(self.e[0], self.c[0]) + i2(self.e[1], self.c[1])) \
-            / self.t
+        kldivc2 = (i2(self.c[0], self.e[0]) + i2(self.c[1], self.e[1])) / self.t
+        kldive2 = (i2(self.e[0], self.c[0]) + i2(self.e[1], self.c[1])) / self.t
 
         return kldivc, kldive, kldivc2, kldive2
 
     def str_kldiv(self, header=True):
-        """ Strings for kldiv()
+        """Strings for kldiv()
 
         Parameters
         ----------
@@ -190,15 +187,17 @@ class BinClassBinSensitiveStats(BinClassStats):
         pr = []
         if header:
             pr.append("### KL Divergence ###")
-        pr.append("[ D(C||E), D(E||C) ] with ln   = [ %.15g, %.15g ]"
-                  % (kldivc, kldive))
-        pr.append("[ D(C||E), D(E||C) ] with log2 = [ %.15g, %.15g ]"
-                  % (kldivc2, kldive2))
+        pr.append(
+            "[ D(C||E), D(E||C) ] with ln   = [ %.15g, %.15g ]" % (kldivc, kldive)
+        )
+        pr.append(
+            "[ D(C||E), D(E||C) ] with log2 = [ %.15g, %.15g ]" % (kldivc2, kldive2)
+        )
 
         return pr
 
     def mics(self):
-        """ Mutual Information between correct classes and sensitive
+        """Mutual Information between correct classes and sensitive
         attributes. (natural log)
 
         Returns
@@ -216,9 +215,12 @@ class BinClassBinSensitiveStats(BinClassStats):
         """
 
         # joint entropy of the pmf function n / sum(n)
-        en = lambda n: np.sum([0.0 if i == 0.0
-                               else (-i / self.t) * np.log(i / self.t)
-                               for i in np.ravel(n)])
+        en = lambda n: np.sum(
+            [
+                0.0 if i == 0.0 else (-i / self.t) * np.log(i / self.t)
+                for i in np.ravel(n)
+            ]
+        )
 
         j = np.sum(self.m, axis=2)
         hj = en(j)
@@ -232,7 +234,7 @@ class BinClassBinSensitiveStats(BinClassStats):
         return mi, nmic, nmis, (nmic + nmis) / 2.0, np.sqrt(nmic * nmis)
 
     def str_mics(self, header=True):
-        """ Strings for mics()
+        """Strings for mics()
 
         Parameters
         ----------
@@ -251,15 +253,14 @@ class BinClassBinSensitiveStats(BinClassStats):
         if header:
             pr.append("### Mutual Information (Correct, Sensitive) ###")
         pr.append("I(C;S) = %.15g" % (mi))
-        pr.append("[ I(C;S)/H(C), I(C;ES)/H(S) ] = [ %.15g, %.15g ]" % \
-                  (nmic, nmis))
+        pr.append("[ I(C;S)/H(C), I(C;ES)/H(S) ] = [ %.15g, %.15g ]" % (nmic, nmis))
         pr.append("Arithmetic Mean = %.15g" % (amean))
         pr.append("Geometric Mean = %.15g" % (gmean))
 
         return pr
 
     def mies(self):
-        """ Mutual Information between estimated classes and sensitive
+        """Mutual Information between estimated classes and sensitive
         attributes. (natural log)
 
         Returns
@@ -277,9 +278,12 @@ class BinClassBinSensitiveStats(BinClassStats):
         """
 
         # joint entropy of the pmf function n / sum(n)
-        en = lambda n: np.sum([0.0 if i == 0.0
-                               else (-i / self.t) * np.log(i / self.t)
-                               for i in np.ravel(n)])
+        en = lambda n: np.sum(
+            [
+                0.0 if i == 0.0 else (-i / self.t) * np.log(i / self.t)
+                for i in np.ravel(n)
+            ]
+        )
 
         j = np.sum(self.m, axis=1)
         hj = en(j)
@@ -293,7 +297,7 @@ class BinClassBinSensitiveStats(BinClassStats):
         return mi, nmie, nmis, (nmie + nmis) / 2.0, np.sqrt(nmie * nmis)
 
     def str_mies(self, header=True):
-        """ Strings for mies()
+        """Strings for mies()
 
         Parameters
         ----------
@@ -312,15 +316,14 @@ class BinClassBinSensitiveStats(BinClassStats):
         if header:
             pr.append("### Mutual Information (Estimated, Sensitive) ###")
         pr.append("I(C;S) = %.15g" % (mi))
-        pr.append("[ I(C;S)/H(C), I(C;ES)/H(S) ] = [ %.15g, %.15g ]" % \
-                  (nmie, nmis))
+        pr.append("[ I(C;S)/H(C), I(C;ES)/H(S) ] = [ %.15g, %.15g ]" % (nmie, nmis))
         pr.append("Arithmetic Mean = %.15g" % (amean))
         pr.append("Geometric Mean = %.15g" % (gmean))
 
         return pr
 
     def klgivens(self):
-        """ KL-divergence between correct and estimated conditional
+        """KL-divergence between correct and estimated conditional
         distributions given sensitive attributes (natural log)
 
         Returns
@@ -355,7 +358,7 @@ class BinClassBinSensitiveStats(BinClassStats):
         return kldivc / self.t, kldive / self.t
 
     def str_klgivens(self, header=True):
-        """ Strings for klgivens()
+        """Strings for klgivens()
 
         Parameters
         ----------
@@ -379,7 +382,7 @@ class BinClassBinSensitiveStats(BinClassStats):
         return pr
 
     def hdjoints(self):
-        """ Hellinger distance between correct and estimated distributions
+        """Hellinger distance between correct and estimated distributions
         jointed with distributions given sensitive attributes
         (natural log)
 
@@ -406,7 +409,7 @@ class BinClassBinSensitiveStats(BinClassStats):
         return np.sqrt(2.0 * hd), np.sqrt(hd)
 
     def str_hdjoints(self, header=True):
-        """ Strings for hdjoints()
+        """Strings for hdjoints()
 
         Parameters
         ----------
@@ -430,7 +433,7 @@ class BinClassBinSensitiveStats(BinClassStats):
         return pr
 
     def cvs(self):
-        """ Caldars-Verwer score.
+        """Caldars-Verwer score.
 
         Returns
         -------
@@ -449,7 +452,7 @@ class BinClassBinSensitiveStats(BinClassStats):
         return cvsc, cvse
 
     def str_cvs(self, header=True):
-        """ Strings for cvs()
+        """Strings for cvs()
 
         Parameters
         ----------
@@ -473,7 +476,7 @@ class BinClassBinSensitiveStats(BinClassStats):
         return pr
 
     def all(self):
-        """ all above statistics
+        """all above statistics
 
         Returns
         -------
@@ -493,7 +496,7 @@ class BinClassBinSensitiveStats(BinClassStats):
         return tuple(stats)
 
     def str_all(self, header=True):
-        """ Strings for all()
+        """Strings for all()
 
         Parameters
         ----------
@@ -512,8 +515,8 @@ class BinClassBinSensitiveStats(BinClassStats):
         ret_str += "\n".join(self.str_acc(header)) + "\n\n"
         ret_str += "\n".join(self.str_mi(header)) + "\n\n"
 
-#        ret_str = super(FairnessAwareIndexBinClassBinSensitive, self).\
-#            str_all(header)
+        #        ret_str = super(FairnessAwareIndexBinClassBinSensitive, self).\
+        #            str_all(header)
         ret_str += "\n".join(self.str_sct(header)) + "\n\n"
         ret_str += "\n".join(self.str_mics(header)) + "\n\n"
         ret_str += "\n".join(self.str_mies(header)) + "\n\n"
@@ -523,27 +526,28 @@ class BinClassBinSensitiveStats(BinClassStats):
 
         return ret_str
 
-#==============================================================================
-# Functions
-#==============================================================================
 
-#==============================================================================
+# ==============================================================================
+# Functions
+# ==============================================================================
+
+# ==============================================================================
 # Module initialization
-#==============================================================================
+# ==============================================================================
 
 # init logging system
 
-logger = logging.getLogger('fadm')
+logger = logging.getLogger("fadm")
 if not logger.handlers:
     logger.addHandler(logging.NullHandler)
 
-#==============================================================================
+# ==============================================================================
 # Test routine
-#==============================================================================
+# ==============================================================================
+
 
 def _test():
-    """ test function for this module
-    """
+    """test function for this module"""
 
     # perform doctest
     import sys
@@ -553,7 +557,8 @@ def _test():
 
     sys.exit(0)
 
+
 # Check if this is call as command script
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _test()

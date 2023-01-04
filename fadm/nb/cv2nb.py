@@ -8,17 +8,14 @@ Calders and Verwer's two naive Bayes method
     vol.21 (2010)
 """
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals
 
-#==============================================================================
+# ==============================================================================
 # Module metadata variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Imports
-#==============================================================================
+# ==============================================================================
 
 import logging
 import numpy as np
@@ -26,35 +23,37 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 
 # private modules -------------------------------------------------------------
 import site
-site.addsitedir('.')
-from  ._nb import *
 
-#==============================================================================
+site.addsitedir(".")
+from ._nb import *
+
+# ==============================================================================
 # Public symbols
-#==============================================================================
+# ==============================================================================
 
-__all__ = ['CaldersVerwerTwoNaiveBayes']
+__all__ = ["CaldersVerwerTwoNaiveBayes"]
 
-#==============================================================================
+# ==============================================================================
 # Constants
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Module variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
-#{ Classes
-#==============================================================================
+# ==============================================================================
+# { Classes
+# ==============================================================================
 
-class CaldersVerwerTwoNaiveBayes(BaseEstimator,
-                                 BayesianClassifierMixin,
-                                 ClassifierMixin):
-    """ Calders and Verwer's two naive Bayes method
-    
+
+class CaldersVerwerTwoNaiveBayes(
+    BaseEstimator, BayesianClassifierMixin, ClassifierMixin
+):
+    """Calders and Verwer's two naive Bayes method
+
     A single and binary sensitive feature is assumed.
     The number of classes must be two.
-    
+
     Parameters
     ----------
     n_features : int
@@ -96,15 +95,13 @@ class CaldersVerwerTwoNaiveBayes(BaseEstimator,
 
         self.pys_ = np.zeros((self.N_CLASSES, self.N_S_VALUES))
         self.clr_ = np.empty(2, dtype=np.object_)
-        for i in xrange(self.N_S_VALUES):
-            self.clr_[i] = CompositeNaiveBayes(self.N_CLASSES,
-                                               self.n_features,
-                                               self.nfv,
-                                               self.alpha,
-                                               self.beta)
+        for i in range(self.N_S_VALUES):
+            self.clr_[i] = CompositeNaiveBayes(
+                self.N_CLASSES, self.n_features, self.nfv, self.alpha, self.beta
+            )
 
     def fit(self, X, y, ns=1, delta=0.01):
-        """ train this model
+        """train this model
 
         Parameters
         ----------
@@ -129,13 +126,13 @@ class CaldersVerwerTwoNaiveBayes(BaseEstimator,
 
         # main learning stage
         self.pys_ = np.histogram2d(y, s, [2, 2], [[0, 2], [0, 2]])[0]
-        for i in xrange(self.N_S_VALUES):
+        for i in range(self.N_S_VALUES):
             self.clr_[i].fit(XX[s == i, :], y[s == i])
 
         # modify joint statistics of y and s
         numpos, disc = self._get_stats(X, y)
-#        print >> sys.stderr, "numpos, disc =", numpos, disc
-#        print >> sys.stderr, "pys_ =", self.pys_[0, :], self.pys_[1, :]
+        #        print >> sys.stderr, "numpos, disc =", numpos, disc
+        #        print >> sys.stderr, "pys_ =", self.pys_[0, :], self.pys_[1, :]
         pos_flag = True
         while disc > 0.0 and pos_flag == True:
             if numpos < d_numpos:
@@ -153,11 +150,12 @@ class CaldersVerwerTwoNaiveBayes(BaseEstimator,
                     self.pys_[1, 1] += delta * self.pys_[1, 0]
                     pos_flag = False
             numpos, disc = self._get_stats(X, y)
-#            print >> sys.stderr, "numpos, disc =", numpos, disc
-#            print >> sys.stderr, "pys_ =", self.pys_[0, :], self.pys_[1, :]
+
+    #            print >> sys.stderr, "numpos, disc =", numpos, disc
+    #            print >> sys.stderr, "pys_ =", self.pys_[0, :], self.pys_[1, :]
 
     def _get_stats(self, X, y):
-        """ get statistics
+        """get statistics
 
         Parameters
         ----------
@@ -177,7 +175,7 @@ class CaldersVerwerTwoNaiveBayes(BaseEstimator,
         return numpos, disc
 
     def _predict_log_proba_upto_const(self, X):
-        """ log probabilities up to constant term
+        """log probabilities up to constant term
 
         Parameters
         ----------
@@ -191,39 +189,39 @@ class CaldersVerwerTwoNaiveBayes(BaseEstimator,
         """
 
         s = np.atleast_1d(X[:, -self.ns].astype(int))
-        XX = np.atleast_2d(X[:, :-self.ns])
+        XX = np.atleast_2d(X[:, : -self.ns])
 
         log_proba = np.empty((X.shape[0], self.N_CLASSES))
         for si in np.unique(s):
-            log_proba[s == si, :] = \
-                self.clr_[si]._predict_composite_log_proba_upto_const(
-                    XX[s == si, :]) + \
-                np.log(self.pys_[:, si] +
-                       self.alpha / self.N_CLASSES)[np.newaxis, :]
+            log_proba[s == si, :] = (
+                self.clr_[si]._predict_composite_log_proba_upto_const(XX[s == si, :])
+                + np.log(self.pys_[:, si] + self.alpha / self.N_CLASSES)[np.newaxis, :]
+            )
 
         return log_proba
 
-#==============================================================================
-# Functions
-#==============================================================================
 
-#==============================================================================
+# ==============================================================================
+# Functions
+# ==============================================================================
+
+# ==============================================================================
 # Module initialization
-#==============================================================================
+# ==============================================================================
 
 # init logging system
 
-logger = logging.getLogger('fadm')
+logger = logging.getLogger("fadm")
 if not logger.handlers:
     logger.addHandler(logging.NullHandler)
 
-#==============================================================================
+# ==============================================================================
 # Test routine
-#==============================================================================
+# ==============================================================================
+
 
 def _test():
-    """ test function for this module
-    """
+    """test function for this module"""
 
     # perform doctest
     import sys
@@ -233,7 +231,8 @@ def _test():
 
     sys.exit(0)
 
+
 # Check if this is call as command script
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _test()

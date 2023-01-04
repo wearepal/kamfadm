@@ -65,13 +65,10 @@ Options
     meaning is negated.
 """
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals
 
-#==============================================================================
+# ==============================================================================
 # Module metadata variables
-#==============================================================================
+# ==============================================================================
 
 __author__ = "Toshihiro Kamishima ( http://www.kamishima.net/ )"
 __date__ = "2012/08/26"
@@ -80,9 +77,9 @@ __copyright__ = "Copyright (c) 2012 Toshihiro Kamishima all rights reserved."
 __license__ = "MIT License: http://www.opensource.org/licenses/mit-license.php"
 __docformat__ = "restructuredtext en"
 
-#==============================================================================
+# ==============================================================================
 # Imports
-#==============================================================================
+# ==============================================================================
 
 import sys
 import argparse
@@ -91,35 +88,37 @@ import numpy as np
 # private modeules -------------------------------------------------------------
 
 import site
-site.addsitedir('.')
+
+site.addsitedir(".")
 
 from fadm.eval import BinClassBinSensitiveStats
 
-#==============================================================================
+# ==============================================================================
 # Public symbols
-#==============================================================================
+# ==============================================================================
 
 __all__ = []
 
-#==============================================================================
+# ==============================================================================
 # Constants
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Module variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Classes
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Functions
-#==============================================================================
+# ==============================================================================
+
 
 def read_01_file(opt):
-    """ read data from file
-    
+    """read data from file
+
     Parameters
     ----------
     opt : option
@@ -137,7 +136,7 @@ def read_01_file(opt):
     # read from file
     line_no = 0
     for line in opt.infile.readlines():
-        line = line.rstrip('\r\n')
+        line = line.rstrip("\r\n")
         line_no += 1
 
         # skip empty line
@@ -154,19 +153,20 @@ def read_01_file(opt):
                 c = int(f[opt.correct])
                 e = int(f[opt.estimated])
 
-                n[s, c, e] += 1 # count up
+                n[s, c, e] += 1  # count up
             except IndexError:
                 sys.exit("Parse error in line %d" % line_no)
 
     return n
 
-#==============================================================================
+
+# ==============================================================================
 # Main routine
-#==============================================================================
+# ==============================================================================
+
 
 def main(opt):
-    """ Main routine that exits with status code 0
-    """
+    """Main routine that exits with status code 0"""
 
     ### main process
 
@@ -195,28 +195,41 @@ def main(opt):
 
     sys.exit(0)
 
+
 ### Check if this is call as command script
-if __name__ == '__main__':
+if __name__ == "__main__":
     ### set script name
-    script_name = sys.argv[0].split('/')[-1]
+    script_name = sys.argv[0].split("/")[-1]
 
     ### command-line option parsing
     ap = argparse.ArgumentParser(
-        description='pydoc is useful for learning the details.')
+        description="pydoc is useful for learning the details."
+    )
 
     # common options
-    ap.add_argument('--version', action='version',
-                    version='%(prog)s ' + __version__)
+    ap.add_argument("--version", action="version", version="%(prog)s " + __version__)
 
     # basic file i/o
-    ap.add_argument('-i', '--in', dest='infile',
-                    default=None, type=argparse.FileType('r'))
-    ap.add_argument('infilep', nargs='?', metavar='INFILE',
-                    default=sys.stdin, type=argparse.FileType('r'))
-    ap.add_argument('-o', '--out', dest='outfile',
-                    default=None, type=argparse.FileType('w'))
-    ap.add_argument('outfilep', nargs='?', metavar='OUTFILE',
-                    default=sys.stdout, type=argparse.FileType('w'))
+    ap.add_argument(
+        "-i", "--in", dest="infile", default=None, type=argparse.FileType("r")
+    )
+    ap.add_argument(
+        "infilep",
+        nargs="?",
+        metavar="INFILE",
+        default=sys.stdin,
+        type=argparse.FileType("r"),
+    )
+    ap.add_argument(
+        "-o", "--out", dest="outfile", default=None, type=argparse.FileType("w")
+    )
+    ap.add_argument(
+        "outfilep",
+        nargs="?",
+        metavar="OUTFILE",
+        default=sys.stdout,
+        type=argparse.FileType("w"),
+    )
 
     # script specific options
     ap.add_argument("-c", "--correct", type=int, default=1)
@@ -236,24 +249,28 @@ if __name__ == '__main__':
     # basic file i/o
     if opt.infile is None:
         opt.infile = opt.infilep
-    del vars(opt)['infilep']
+    del vars(opt)["infilep"]
     if opt.outfile is None:
         opt.outfile = opt.outfilep
-    del vars(opt)['outfilep']
+    del vars(opt)["outfilep"]
 
     # set meta-data of script and machine
     opt.script_name = script_name
     opt.script_version = __version__
 
     # the specified delimiter is TAB?
-    if opt.dl == 't' or opt.dl == 'T':
-        opt.dl = '\t'
+    if opt.dl == "t" or opt.dl == "T":
+        opt.dl = "\t"
 
     # check columns
-    if opt.correct <= 0 or opt.estimated <= 0 or opt.sensitive <= 0\
-       or opt.correct == opt.estimated\
-       or opt.correct == opt.sensitive\
-    or opt.estimated == opt.sensitive:
+    if (
+        opt.correct <= 0
+        or opt.estimated <= 0
+        or opt.sensitive <= 0
+        or opt.correct == opt.estimated
+        or opt.correct == opt.sensitive
+        or opt.estimated == opt.sensitive
+    ):
         sys.exit("Incorrect specification of data columns")
     opt.estimated -= 1
     opt.correct -= 1

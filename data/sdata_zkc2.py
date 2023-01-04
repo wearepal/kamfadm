@@ -14,9 +14,7 @@ Output Format::
 
   T<sp>P<sp>S<sp>Y<nl>
 """
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals
+
 
 import numpy as np
 
@@ -24,23 +22,23 @@ import numpy as np
 np.random.seed(1234)
 
 # the numbers of total candidates
-nPG = np.empty((2,2), dtype=np.int)
-nPG[0, 0] = 800 # medicine, female
-nPG[0, 1] = 200 # medicine, male
-nPG[1, 0] = 200 # computer science, female
-nPG[1, 1] = 800 # computer science, male
+nPG = np.empty((2, 2), dtype=np.int)
+nPG[0, 0] = 800  # medicine, female
+nPG[0, 1] = 200  # medicine, male
+nPG[1, 0] = 200  # computer science, female
+nPG[1, 1] = 800  # computer science, male
 
 # the numbers of accepted candidates
-nYgPG = np.empty((2,3), dtype=np.int)
-nYgPG[0, 0] = 160 # medicine, female
+nYgPG = np.empty((2, 3), dtype=np.int)
+nYgPG[0, 0] = 160  # medicine, female
 nYgPG[0, 1] = 40  # medicine, male
 nYgPG[1, 0] = 80  # computer science, female
-nYgPG[1, 1] = 320 # computer science, male
+nYgPG[1, 1] = 320  # computer science, male
 
-for p in xrange(2):
-    for g in xrange(2):
+for p in range(2):
+    for g in range(2):
         t = np.sort(np.random.random_integers(1, 100, nPG[p, g]))
-        for i in xrange(nPG[p, g]):
+        for i in range(nPG[p, g]):
             if i < (nPG[p, g] - nYgPG[p, g]):
                 y = 0
             else:

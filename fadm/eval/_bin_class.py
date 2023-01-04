@@ -7,41 +7,39 @@ Compute various statistics between estimated and correct classes in binary
 cases
 """
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals
 
-#==============================================================================
+# ==============================================================================
 # Module metadata variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Imports
-#==============================================================================
+# ==============================================================================
 
 import logging
 import numpy as np
 
-#==============================================================================
+# ==============================================================================
 # Public symbols
-#==============================================================================
+# ==============================================================================
 
-__all__ = ['BinClassStats']
+__all__ = ["BinClassStats"]
 
-#==============================================================================
+# ==============================================================================
 # Constants
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Module variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Classes
-#==============================================================================
+# ==============================================================================
+
 
 class BinClassStats(object):
-    """ Compute various statistics of 2class sample data
+    """Compute various statistics of 2class sample data
 
     Parameters
     ----------
@@ -79,13 +77,16 @@ class BinClassStats(object):
         self.e = np.sum(self.n, axis=0)
         self.t = np.sum(self.n)
 
-        if self.t <= 0.0 or np.any(self.n < 0.0) \
-            or np.any(np.isinf(self.n)) or np.any(np.isnan(self.n)):
+        if (
+            self.t <= 0.0
+            or np.any(self.n < 0.0)
+            or np.any(np.isinf(self.n))
+            or np.any(np.isnan(self.n))
+        ):
             raise ValueError("Illegal values are specified")
 
     def negate(self):
-        """ negate the meanings of positives and negatives
-        """
+        """negate the meanings of positives and negatives"""
 
         self.n[1, 1], self.n[0, 0] = self.n[0, 0], self.n[1, 1]
         self.n[1, 0], self.n[0, 1] = self.n[0, 1], self.n[1, 0]
@@ -95,7 +96,7 @@ class BinClassStats(object):
         self.t = np.sum(self.n)
 
     def ct(self):
-        """ Counts of contingency table elements
+        """Counts of contingency table elements
 
         Returns
         -------
@@ -112,7 +113,7 @@ class BinClassStats(object):
         return self.n[1, 1], self.n[1, 0], self.n[0, 1], self.n[0, 0]
 
     def str_ct(self, header=True):
-        """ Strings for ct()
+        """Strings for ct()
 
         Parameters
         ----------
@@ -136,7 +137,7 @@ class BinClassStats(object):
         return pr
 
     def mct(self):
-        """ Marginal counts of contingency table elements
+        """Marginal counts of contingency table elements
 
         Returns
         -------
@@ -155,7 +156,7 @@ class BinClassStats(object):
         return self.c[1], self.c[0], self.e[1], self.e[0], self.t
 
     def str_mct(self, header=True):
-        """ Strings for mct()
+        """Strings for mct()
 
         Parameters
         ----------
@@ -180,7 +181,7 @@ class BinClassStats(object):
         return pr
 
     def acc(self):
-        """ Accuracy
+        """Accuracy
 
         Returns
         -------
@@ -196,7 +197,7 @@ class BinClassStats(object):
         return acc, sd
 
     def str_acc(self, header=True):
-        """ Strings for acc()
+        """Strings for acc()
 
         Parameters
         ----------
@@ -219,7 +220,7 @@ class BinClassStats(object):
         return pr
 
     def jaccard(self):
-        """ Jaccard / Dice coefficients
+        """Jaccard / Dice coefficients
 
         Returns
         -------
@@ -241,7 +242,7 @@ class BinClassStats(object):
         return jaccard, njaccard, dice, ndice
 
     def str_jaccard(self, header=True):
-        """ Strings for jaccard()
+        """Strings for jaccard()
 
         Parameters
         ----------
@@ -265,7 +266,7 @@ class BinClassStats(object):
         return pr
 
     def kldiv(self):
-        """ KL divergence
+        """KL divergence
 
         Returns
         -------
@@ -283,26 +284,22 @@ class BinClassStats(object):
             KL divergence from estimated to correct.
         """
 
-        i = lambda n, m: 0.0 if n == 0.0 else \
-            np.inf if m == 0.0 else n * np.log(n / m)
+        i = lambda n, m: 0.0 if n == 0.0 else np.inf if m == 0.0 else n * np.log(n / m)
 
-        kldivc = (i(self.c[0], self.e[0]) + i(self.c[1], self.e[1])) \
-            / self.t
-        kldive = (i(self.e[0], self.c[0]) + i(self.e[1], self.c[1])) \
-            / self.t
+        kldivc = (i(self.c[0], self.e[0]) + i(self.c[1], self.e[1])) / self.t
+        kldive = (i(self.e[0], self.c[0]) + i(self.e[1], self.c[1])) / self.t
 
-        i2 = lambda n, m: 0.0 if n == 0.0 else \
-            np.inf if m == 0.0 else n * np.log2(n / m)
+        i2 = (
+            lambda n, m: 0.0 if n == 0.0 else np.inf if m == 0.0 else n * np.log2(n / m)
+        )
 
-        kldivc2 = (i2(self.c[0], self.e[0]) + i2(self.c[1], self.e[1])) \
-            / self.t
-        kldive2 = (i2(self.e[0], self.c[0]) + i2(self.e[1], self.c[1])) \
-            / self.t
+        kldivc2 = (i2(self.c[0], self.e[0]) + i2(self.c[1], self.e[1])) / self.t
+        kldive2 = (i2(self.e[0], self.c[0]) + i2(self.e[1], self.c[1])) / self.t
 
         return kldivc, kldive, kldivc2, kldive2
 
     def str_kldiv(self, header=True):
-        """ Strings for kldiv()
+        """Strings for kldiv()
 
         Parameters
         ----------
@@ -320,15 +317,17 @@ class BinClassStats(object):
         pr = []
         if header:
             pr.append("### KL Divergence ###")
-        pr.append("[ D(C||E), D(E||C) ] with ln   = [ %.15g, %.15g ]"
-                  % (kldivc, kldive))
-        pr.append("[ D(C||E), D(E||C) ] with log2 = [ %.15g, %.15g ]"
-                  % (kldivc2, kldive2))
+        pr.append(
+            "[ D(C||E), D(E||C) ] with ln   = [ %.15g, %.15g ]" % (kldivc, kldive)
+        )
+        pr.append(
+            "[ D(C||E), D(E||C) ] with log2 = [ %.15g, %.15g ]" % (kldivc2, kldive2)
+        )
 
         return pr
 
     def mi(self):
-        """ Mutual Information with natural log
+        """Mutual Information with natural log
 
         Returns
         -------
@@ -345,9 +344,12 @@ class BinClassStats(object):
         """
 
         # joint entropy of the pmf function n / sum(n)
-        en = lambda n: np.sum([0.0 if i == 0.0
-                               else (-i / self.t) * np.log(i / self.t)
-                               for i in np.ravel(n)])
+        en = lambda n: np.sum(
+            [
+                0.0 if i == 0.0 else (-i / self.t) * np.log(i / self.t)
+                for i in np.ravel(n)
+            ]
+        )
 
         hc = en(self.c)
         he = en(self.e)
@@ -360,7 +362,7 @@ class BinClassStats(object):
         return mi, nmic, nmie, (nmic + nmie) / 2.0, np.sqrt(nmic * nmie)
 
     def str_mi(self, header=True):
-        """ Strings for mi()
+        """Strings for mi()
 
         Parameters
         ----------
@@ -379,15 +381,14 @@ class BinClassStats(object):
         if header:
             pr.append("### Mutual Information (natual log) ###")
         pr.append("I(C;E) = %.15g" % (mi))
-        pr.append("[ I(C;E)/H(C), I(C;E)/H(E) ] = [ %.15g, %.15g ]" % \
-                  (nmic, nmie))
+        pr.append("[ I(C;E)/H(C), I(C;E)/H(E) ] = [ %.15g, %.15g ]" % (nmic, nmie))
         pr.append("Arithmetic Mean = %.15g" % (amean))
         pr.append("Geometric Mean = %.15g" % (gmean))
 
         return pr
 
     def mi2(self):
-        """ Mutual Information with log2
+        """Mutual Information with log2
 
         Returns
         -------
@@ -404,9 +405,12 @@ class BinClassStats(object):
         """
 
         # joint entropy of the pmf function n / sum(n)
-        en = lambda n: np.sum([0.0 if i == 0.0
-                               else (-i / self.t) * np.log2(i / self.t)
-                               for i in np.ravel(n)])
+        en = lambda n: np.sum(
+            [
+                0.0 if i == 0.0 else (-i / self.t) * np.log2(i / self.t)
+                for i in np.ravel(n)
+            ]
+        )
 
         hc = en(self.c)
         he = en(self.e)
@@ -419,7 +423,7 @@ class BinClassStats(object):
         return mi, nmic, nmie, (nmic + nmie) / 2.0, np.sqrt(nmic * nmie)
 
     def str_mi2(self, header=True):
-        """ Strings for mi2()
+        """Strings for mi2()
 
         Parameters
         ----------
@@ -438,15 +442,14 @@ class BinClassStats(object):
         if header:
             pr.append("### Mutual Information (log2) ###")
         pr.append("I(C;E) = %.15g" % (mi))
-        pr.append("[ I(C;E)/H(C), I(C;E)/H(E) ] = [ %.15g, %.15g ]" % \
-                  (nmic, nmie))
+        pr.append("[ I(C;E)/H(C), I(C;E)/H(E) ] = [ %.15g, %.15g ]" % (nmic, nmie))
         pr.append("Arithmetic Mean = %.15g" % (amean))
         pr.append("Geometric Mean = %.15g" % (gmean))
 
         return pr
 
     def prf(self, alpha=0.5):
-        """ Precision, recall, and F-measure
+        """Precision, recall, and F-measure
 
         Parameters
         ----------
@@ -469,7 +472,7 @@ class BinClassStats(object):
         return p, r, f
 
     def str_prf(self, alpha=0.5, header=True):
-        """ Strings for prf()
+        """Strings for prf()
 
         Parameters
         ----------
@@ -494,7 +497,7 @@ class BinClassStats(object):
         return pr
 
     def all(self):
-        """ all above statistics
+        """all above statistics
 
         Returns
         -------
@@ -516,7 +519,7 @@ class BinClassStats(object):
         return tuple(stats)
 
     def str_all(self, header=True):
-        """ Strings for all()
+        """Strings for all()
 
         Parameters
         ----------
@@ -542,27 +545,28 @@ class BinClassStats(object):
 
         return ret_str
 
-#==============================================================================
-# Functions
-#==============================================================================
 
-#==============================================================================
+# ==============================================================================
+# Functions
+# ==============================================================================
+
+# ==============================================================================
 # Module initialization
-#==============================================================================
+# ==============================================================================
 
 # init logging system ---------------------------------------------------------
 
-logger = logging.getLogger('fadm')
+logger = logging.getLogger("fadm")
 if not logger.handlers:
     logger.addHandler(logging.NullHandler)
 
-#==============================================================================
+# ==============================================================================
 # Test routine
-#==============================================================================
+# ==============================================================================
+
 
 def _test():
-    """ test function for this module
-    """
+    """test function for this module"""
 
     # perform doctest
     import sys
@@ -572,7 +576,8 @@ def _test():
 
     sys.exit(0)
 
+
 # Check if this is call as command script -------------------------------------
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _test()

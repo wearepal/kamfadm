@@ -39,9 +39,9 @@ Options
     vol.21 (2010)
 """
 
-#==============================================================================
+# ==============================================================================
 # Module metadata variables
-#==============================================================================
+# ==============================================================================
 
 __author__ = "Toshihiro Kamishima ( http://www.kamishima.net/ )"
 __date__ = "2011/02/07"
@@ -50,9 +50,9 @@ __copyright__ = "Copyright (c) 2011 Toshihiro Kamishima all rights reserved."
 __license__ = "MIT License http://www.opensource.org/licenses/mit-license.php"
 __docformat__ = "restructuredtext en"
 
-#==============================================================================
+# ==============================================================================
 # Imports
-#==============================================================================
+# ==============================================================================
 
 import sys
 import os
@@ -60,34 +60,35 @@ import optparse
 import numpy as np
 from scipy.io.arff import loadarff
 
-#==============================================================================
+# ==============================================================================
 # Public symbols
-#==============================================================================
+# ==============================================================================
 
 __all__ = []
 
-#==============================================================================
-#{ Constants
-#==============================================================================
+# ==============================================================================
+# { Constants
+# ==============================================================================
 
-#==============================================================================
-#{ Module variables
-#==============================================================================
+# ==============================================================================
+# { Module variables
+# ==============================================================================
 
 script_name = os.path.basename(sys.argv[0])
 
-#==============================================================================
-#{ Classes
-#==============================================================================
+# ==============================================================================
+# { Classes
+# ==============================================================================
 
-#==============================================================================
-#{ Functions 
-#==============================================================================
+# ==============================================================================
+# { Functions
+# ==============================================================================
+
 
 def discretize_numerical_attribute(attr, data, meta, name, n_bin):
-    """ Discretize numerical attribute into the specified
+    """Discretize numerical attribute into the specified
     number of bins.
-    
+
     :Parameters:
         attr : dict, shape=(2)
             updated attribute information
@@ -104,30 +105,31 @@ def discretize_numerical_attribute(attr, data, meta, name, n_bin):
     # find thresholds
     vlist = []
     for d in data:
-        if d[name] != '?':
+        if d[name] != "?":
             vlist.append(d[name])
     vlist.sort()
 
     tlist = []
-    for t in xrange(n_bin - 1):
+    for t in range(n_bin - 1):
         i = int(len(vlist) * (t + 1) / n_bin)
         tlist.append(vlist[i])
     tlist.append(vlist[-1])
 
     # update attribute info
-    attr[name] = ('nominal', map(lambda x: 'v' + str(x), np.arange(n_bin)))
+    attr[name] = ("nominal", ["v" + str(x) for x in np.arange(n_bin)])
 
     # discretize numerical attributes
     for d in data:
-        if d[name] != '?':
-            for v in xrange(n_bin):
+        if d[name] != "?":
+            for v in range(n_bin):
                 if d[name] <= tlist[v]:
                     break
-            d[name] = 'v' + str(v)
+            d[name] = "v" + str(v)
+
 
 def merge_low_freq_vals(attr, data, meta, name, min_freq):
-    """ Merge low frequency attribute values into a *Pool* value. 
-    
+    """Merge low frequency attribute values into a *Pool* value.
+
     :Parameters:
         attr : dict, shape=(2)
             updated attribute information
@@ -143,7 +145,7 @@ def merge_low_freq_vals(attr, data, meta, name, min_freq):
 
     # countup data
     count = {}
-    count['?'] = 0
+    count["?"] = 0
     for k in attr[name][1]:
         count[k] = 0
 
@@ -152,14 +154,14 @@ def merge_low_freq_vals(attr, data, meta, name, min_freq):
 
     # generate conversion table
     conv = {}
-    conv['?'] = '?'
-    del count['?']
+    conv["?"] = "?"
+    del count["?"]
 
     for k in attr[name][1]:
         if count[k] <= 0:
             pass
         elif count[k] <= min_freq:
-            conv[k] = 'Pool'
+            conv[k] = "Pool"
         else:
             conv[k] = k
 
@@ -168,26 +170,25 @@ def merge_low_freq_vals(attr, data, meta, name, min_freq):
         d[name] = conv[d[name]]
 
     # generate new attr_list
-    new_attr = conv.values()
-    new_attr.remove('?')
-    for i in xrange(new_attr.count('Pool') - 1):
-        new_attr.remove('Pool')
+    new_attr = list(conv.values())
+    new_attr.remove("?")
+    for i in range(new_attr.count("Pool") - 1):
+        new_attr.remove("Pool")
 
     # update attribute info
-    attr[name] = ['nominal', new_attr]
+    attr[name] = ["nominal", new_attr]
+
 
 def savearff(out, attr, data, meta):
-    """ write arff file
-    """
+    """write arff file"""
 
     # write header
     out.write("@relation adultd\n")
     for name in meta.names():
-        if name == 'income':
+        if name == "income":
             out.write("@attribute income {'>50K','<=50K'}\n")
         else:
-            out.write("@attribute " + name +
-                      " {" + ",".join(attr[name][1]) + "}\n")
+            out.write("@attribute " + name + " {" + ",".join(attr[name][1]) + "}\n")
 
     # write body
     out.write("@data\n")
@@ -195,13 +196,14 @@ def savearff(out, attr, data, meta):
         d[-1] = "'" + d[-1] + "'"
         out.write(",".join(d) + "\n")
 
-#==============================================================================
-#{ Main routine
-#==============================================================================
+
+# ==============================================================================
+# { Main routine
+# ==============================================================================
+
 
 def main(opt, arg):
-    """ Main routine that exits with status code 0
-    """
+    """Main routine that exits with status code 0"""
 
     # open input file
     if opt.input == None:
@@ -228,7 +230,7 @@ def main(opt, arg):
     # process each attribute
     attr = {}
     for name in meta:
-        if meta[name][0] == 'numeric':
+        if meta[name][0] == "numeric":
             discretize_numerical_attribute(attr, data, meta, name, opt.bin)
         else:
             attr[name] = [meta[name][0], list(meta[name][1])]
@@ -249,17 +251,20 @@ def main(opt, arg):
 
     sys.exit(0)
 
-#==============================================================================
+
+# ==============================================================================
 # Check if this is call as command script
-#==============================================================================
-if __name__ == '__main__':
+# ==============================================================================
+if __name__ == "__main__":
 
     # command-lien option parsing
-    parser = optparse.OptionParser(usage="Usage: %prog [options] args...",
-                                   description="For details, use pydoc or epydoc.",
-                                   version="%prog " + __version__)
+    parser = optparse.OptionParser(
+        usage="Usage: %prog [options] args...",
+        description="For details, use pydoc or epydoc.",
+        version="%prog " + __version__,
+    )
 
-#  ----------------------------------------------------------------------------
+    #  ----------------------------------------------------------------------------
     # additional command line args
 
     parser.add_option("-i", "--in", dest="input")
@@ -269,7 +274,7 @@ if __name__ == '__main__':
     parser.add_option("-m", "--minfreq", dest="minf", type="int")
     parser.set_defaults(minf=50)
 
-#  ----------------------------------------------------------------------------
+    #  ----------------------------------------------------------------------------
 
     (opt, arg) = parser.parse_args()
 

@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals
 
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 import unittest
 
 ##### Test Classes #####
+
 
 class TestCaldersVerwerTwoNaiveBayes(unittest.TestCase):
     def runTest(self):
@@ -21,8 +19,9 @@ class TestCaldersVerwerTwoNaiveBayes(unittest.TestCase):
         self.assertEqual(m.n_features, 5)
         assert_array_almost_equal(m.nfv, [2, 2, 2, 2, 3])
         self.assertAlmostEqual(m.beta, 0.8)
-        assert_array_almost_equal(m.pys_, [[ 0.,  0.], [ 0., 0.]])
+        assert_array_almost_equal(m.pys_, [[0.0, 0.0], [0.0, 0.0]])
+
 
 ##### Main routine #####
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

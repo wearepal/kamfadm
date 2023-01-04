@@ -16,17 +16,14 @@ N_CLASSES : int
     the number of classes
 """
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals
 
-#==============================================================================
+# ==============================================================================
 # Module metadata variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Imports
-#==============================================================================
+# ==============================================================================
 
 import logging
 import numpy as np
@@ -34,34 +31,41 @@ from scipy.optimize import fmin_cg
 from sklearn.linear_model import LogisticRegression
 from sklearn.base import BaseEstimator, ClassifierMixin
 
-#==============================================================================
+# ==============================================================================
 # Public symbols
-#==============================================================================
+# ==============================================================================
 
-__all__ = ['LRwPRType4', 'LRwPRType5',
-           'LRwPRType6', 'LRwPRType7',
-           'LRwPRType8', 'LRwPRType9',
-           'LRwPRType10', 'LRwPRType11']
+__all__ = [
+    "LRwPRType4",
+    "LRwPRType5",
+    "LRwPRType6",
+    "LRwPRType7",
+    "LRwPRType8",
+    "LRwPRType9",
+    "LRwPRType10",
+    "LRwPRType11",
+]
 
-#==============================================================================
+# ==============================================================================
 # Constants
-#==============================================================================
+# ==============================================================================
 
 EPSILON = 1.0e-10
 SIGMOID_RANGE = np.log((1.0 - EPSILON) / EPSILON)
 N_S = 1
 N_CLASSES = 2
 
-#==============================================================================
+# ==============================================================================
 # Module variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Functions
-#==============================================================================
+# ==============================================================================
+
 
 def sigmoid(x, w):
-    """ sigmoid(w^T x)
+    """sigmoid(w^T x)
     To suppress the warnings at np.exp, do "np.seterr(all='ignore')
 
     Parameters
@@ -81,12 +85,13 @@ def sigmoid(x, w):
     return 1.0 / (1.0 + np.exp(-s))
 
 
-#==============================================================================
+# ==============================================================================
 # Classes
-#==============================================================================
+# ==============================================================================
+
 
 class LRwPR(BaseEstimator, ClassifierMixin):
-    """ Two class LogisticRegression with Prejudice Remover
+    """Two class LogisticRegression with Prejudice Remover
 
     Parameters
     ----------
@@ -122,7 +127,7 @@ class LRwPR(BaseEstimator, ClassifierMixin):
         the value of loss function after training
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty='l2'):
+    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
         if C < 0.0:
             raise TypeError
@@ -134,7 +139,7 @@ class LRwPR(BaseEstimator, ClassifierMixin):
         self.f_loss_ = np.inf
 
     def predict(self, X):
-        """ predict classes
+        """predict classes
 
         Parameters
         ----------
@@ -149,12 +154,12 @@ class LRwPR(BaseEstimator, ClassifierMixin):
 
         return np.argmax(self.predict_proba(X), 1)
 
+
 class LRwPRPredictProbaType2Mixin(LRwPR):
-    """ mixin for singe type 2 likelihood
-    """
+    """mixin for singe type 2 likelihood"""
 
     def predict_proba(self, X):
-        """ predict probabilities
+        """predict probabilities
 
         a set of weight vectors, whose size if the same as the number of the
         sensitive features, are available and these weights are selected
@@ -174,24 +179,23 @@ class LRwPRPredictProbaType2Mixin(LRwPR):
         # add a constanet term
         s = np.atleast_1d(np.squeeze(np.array(X)[:, -self.n_s_]).astype(int))
         if self.fit_intercept:
-            X = np.c_[np.atleast_2d(X)[:, :-self.n_s_], np.ones(X.shape[0])]
+            X = np.c_[np.atleast_2d(X)[:, : -self.n_s_], np.ones(X.shape[0])]
         else:
-            X = np.atleast_2d(X)[:, :-self.n_s_]
+            X = np.atleast_2d(X)[:, : -self.n_s_]
         coef = self.coef_.reshape(self.n_sfv_, self.n_features_)
 
         proba = np.empty((X.shape[0], N_CLASSES))
-        proba[:, 1] = [sigmoid(X[i, :], coef[s[i], :])
-                       for i in xrange(X.shape[0])]
+        proba[:, 1] = [sigmoid(X[i, :], coef[s[i], :]) for i in range(X.shape[0])]
         proba[:, 0] = 1.0 - proba[:, 1]
 
         return proba
 
+
 class LRwPRPredictProbaType3Mixin(LRwPR):
-    """ mixin for singe type 2 likelihood
-    """
+    """mixin for singe type 2 likelihood"""
 
     def predict_proba(self, X):
-        """ predict probabilities
+        """predict probabilities
 
         a set of weight vectors, whose size if the same as the number of the
         sensitive features, are available. After computing the distribution of
@@ -212,27 +216,32 @@ class LRwPRPredictProbaType3Mixin(LRwPR):
         # add a constanet term
         s = np.atleast_1d(np.squeeze(np.array(X)[:, -self.n_s_]).astype(int))
         if self.fit_intercept:
-            X = np.c_[np.atleast_2d(X)[:, :-self.n_s_], np.ones(X.shape[0])]
+            X = np.c_[np.atleast_2d(X)[:, : -self.n_s_], np.ones(X.shape[0])]
         else:
-            X = np.atleast_2d(X)[:, :-self.n_s_]
+            X = np.atleast_2d(X)[:, : -self.n_s_]
         coef = self.coef_.reshape(self.n_sfv_, self.n_features_)
 
         proba = np.empty((X.shape[0], N_CLASSES))
-        proba[:, 1] = [np.sum([self.c_s_[si] *
-                               sigmoid(X[i, :], coef[si, :])
-                               for si in xrange(self.n_sfv_)])
-                       / self.n_samples_
-                       for i in xrange(X.shape[0])]
+        proba[:, 1] = [
+            np.sum(
+                [
+                    self.c_s_[si] * sigmoid(X[i, :], coef[si, :])
+                    for si in range(self.n_sfv_)
+                ]
+            )
+            / self.n_samples_
+            for i in range(X.shape[0])
+        ]
         proba[:, 0] = 1.0 - proba[:, 1]
 
         return proba
 
+
 class LRwPRFittingType1Mixin(LRwPR):
-    """ Fitting Method Mixin
-    """
+    """Fitting Method Mixin"""
 
     def init_coef(self, itype, X, y, s):
-        """ set initial weight
+        """set initial weight
 
         initialization methods are specified by `itype`
 
@@ -256,39 +265,34 @@ class LRwPRFittingType1Mixin(LRwPR):
 
         if itype == 0:
             # clear by zeros
-            self.coef_ = np.zeros(self.n_sfv_ * self.n_features_,
-                                  dtype=np.float)
+            self.coef_ = np.zeros(self.n_sfv_ * self.n_features_, dtype=np.float)
         elif itype == 1:
             # at random
             self.coef_ = np.random.randn(self.n_sfv_ * self.n_features_)
 
         elif itype == 2:
             # learned by standard LR
-            self.coef_ = np.empty(self.n_sfv_ * self.n_features_,
-                                  dtype=np.float)
+            self.coef_ = np.empty(self.n_sfv_ * self.n_features_, dtype=np.float)
             coef = self.coef_.reshape(self.n_sfv_, self.n_features_)
 
-            clr = LogisticRegression(C=self.C, penalty='l2',
-                                     fit_intercept=False)
+            clr = LogisticRegression(C=self.C, penalty="l2", fit_intercept=False)
             clr.fit(X, y)
 
             coef[:, :] = clr.coef_
         elif itype == 3:
             # learned by standard LR
-            self.coef_ = np.empty(self.n_sfv_ * self.n_features_,
-                                  dtype=np.float)
+            self.coef_ = np.empty(self.n_sfv_ * self.n_features_, dtype=np.float)
             coef = self.coef_.reshape(self.n_sfv_, self.n_features_)
 
-            for i in xrange(self.n_sfv_):
-                clr = LogisticRegression(C=self.C, penalty='l2',
-                                         fit_intercept=False)
+            for i in range(self.n_sfv_):
+                clr = LogisticRegression(C=self.C, penalty="l2", fit_intercept=False)
                 clr.fit(X[s == i, :], y[s == i])
                 coef[i, :] = clr.coef_
         else:
             raise typeError
 
     def fit(self, X, y, ns=N_S, itype=0, **kwargs):
-        """ train this model
+        """train this model
 
         Parameters
         ----------
@@ -312,32 +316,32 @@ class LRwPRFittingType1Mixin(LRwPR):
             X = np.atleast_2d(X)[:, :-ns]
 
         # check optimization parameters
-        if not 'disp' in kwargs:
-            kwargs['disp'] = False
-        if not 'maxiter' in kwargs:
-            kwargs['maxiter'] = 100
+        if not "disp" in kwargs:
+            kwargs["disp"] = False
+        if not "maxiter" in kwargs:
+            kwargs["maxiter"] = 100
 
         # set instance variables
         self.n_s_ = ns
         self.n_sfv_ = np.max(s) + 1
-        self.c_s_ = np.array([np.sum(s == si).astype(np.float)
-                              for si in xrange(self.n_sfv_)])
+        self.c_s_ = np.array(
+            [np.sum(s == si).astype(np.float) for si in range(self.n_sfv_)]
+        )
         self.n_features_ = X.shape[1]
         self.n_samples_ = X.shape[0]
 
         # optimization
         self.init_coef(itype, X, y, s)
-        self.coef_ = fmin_cg(self.loss,
-                             self.coef_,
-                             fprime=self.grad_loss,
-                             args=(X, y, s),
-                             **kwargs)
+        self.coef_ = fmin_cg(
+            self.loss, self.coef_, fprime=self.grad_loss, args=(X, y, s), **kwargs
+        )
 
         # get final loss
         self.f_loss_ = self.loss(self.coef_, X, y, s)
 
+
 class LRwPRObjetiveType4Mixin(LRwPR):
-    """ objective function of logistic regression with prejudice remover
+    """objective function of logistic regression with prejudice remover
 
     Loss Function type 4: Weights for logistic regression are prepared for each
     value of S. Penalty for enhancing is defined as mutual information between
@@ -345,7 +349,7 @@ class LRwPRObjetiveType4Mixin(LRwPR):
     """
 
     def loss(self, coef_, X, y, s):
-        """ loss function: negative log - likelihood with l2 regularizer
+        """loss function: negative log - likelihood with l2 regularizer
         To suppress the warnings at np.log, do "np.seterr(all='ignore')
 
         Parameters
@@ -367,17 +371,15 @@ class LRwPRObjetiveType4Mixin(LRwPR):
 
         coef = coef_.reshape(self.n_sfv_, self.n_features_)
 
-#        print >> sys.stderr, "loss:", coef[0, :], coef[1, :]
+        #        print >> sys.stderr, "loss:", coef[0, :], coef[1, :]
 
         ### constants
 
         # sigma = Pr[y=0|x,s] = sigmoid(w(s)^T x)
-        p = np.array([sigmoid(X[i, :], coef[s[i], :])
-                      for i in xrange(self.n_samples_)])
+        p = np.array([sigmoid(X[i, :], coef[s[i], :]) for i in range(self.n_samples_)])
 
         # rho(s) = Pr[y=0|s] = \sum_{(xi,si)in D st si=s} sigma(xi,si) / #D[s]
-        q = np.array([np.sum(p[s == si])
-                      for si in xrange(self.n_sfv_)]) / self.c_s_
+        q = np.array([np.sum(p[s == si]) for si in range(self.n_sfv_)]) / self.c_s_
 
         # pi = Pr[y=0] = \sum_{(xi,si)in D} sigma(xi,si)
         r = np.sum(p) / self.n_samples_
@@ -392,18 +394,20 @@ class LRwPRObjetiveType4Mixin(LRwPR):
         # \sum_{x,s in D} \
         #    sigma(x,x)       [log(rho(s))     - log(pi)    ] + \
         #    (1 - sigma(x,s)) [log(1 - rho(s)) - log(1 - pi)]
-        f = np.sum(p * (np.log(q[s]) - np.log(r))
-             + (1.0 - p) * (np.log(1.0 - q[s]) - np.log(1.0 - r)))
+        f = np.sum(
+            p * (np.log(q[s]) - np.log(r))
+            + (1.0 - p) * (np.log(1.0 - q[s]) - np.log(1.0 - r))
+        )
 
         # l2 regularizer
         reg = np.sum(coef * coef)
 
         l = -l + self.eta * f + 0.5 * self.C * reg
-#        print >> sys.stderr, l
+        #        print >> sys.stderr, l
         return l
 
     def grad_loss(self, coef_, X, y, s):
-        """ first derivative of loss function
+        """first derivative of loss function
 
         Parameters
         ----------
@@ -424,24 +428,23 @@ class LRwPRObjetiveType4Mixin(LRwPR):
         coef = coef_.reshape(self.n_sfv_, self.n_features_)
         l_ = np.empty(self.n_sfv_ * self.n_features_)
         l = l_.reshape(self.n_sfv_, self.n_features_)
-#        print >> sys.stderr, "grad_loss:", coef[0, :], coef[1, :]
+        #        print >> sys.stderr, "grad_loss:", coef[0, :], coef[1, :]
 
         ### constants
         # prefix "d_": derivertive by w(s)
 
         # sigma = Pr[y=0|x,s] = sigmoid(w(s)^T x)
         # d_sigma(x,s) = d sigma / d w(s) = sigma (1 - sigma) x
-        p = np.array([sigmoid(X[i, :], coef[s[i], :])
-                      for i in xrange(self.n_samples_)])
+        p = np.array([sigmoid(X[i, :], coef[s[i], :]) for i in range(self.n_samples_)])
         dp = (p * (1.0 - p))[:, np.newaxis] * X
 
         # rho(s) = Pr[y=0|s] = \sum_{(xi,si)in D st si=s} sigma(xi,si) / #D[s]
         # d_rho(s) = \sum_{(xi,si)in D st si=s} d_sigma(xi,si) / #D[s]
-        q = np.array([np.sum(p[s == si])
-                      for si in xrange(self.n_sfv_)]) / self.c_s_
-        dq = np.array([np.sum(dp[s == si, :], axis=0)
-                       for si in xrange(self.n_sfv_)]) \
-                       / self.c_s_[:, np.newaxis]
+        q = np.array([np.sum(p[s == si]) for si in range(self.n_sfv_)]) / self.c_s_
+        dq = (
+            np.array([np.sum(dp[s == si, :], axis=0) for si in range(self.n_sfv_)])
+            / self.c_s_[:, np.newaxis]
+        )
 
         # pi = Pr[y=0] = \sum_{(xi,si)in D} sigma(xi,si) / #D
         # d_pi = \sum_{(xi,si)in D} d_sigma(xi,si) / #D
@@ -450,9 +453,8 @@ class LRwPRObjetiveType4Mixin(LRwPR):
 
         # likelihood
         # l(si) = \sum_{x,y in D st s=si} (y - sigma(x, si)) x
-        for si in xrange(self.n_sfv_):
-            l[si, :] = np.sum((y - p)[s == si][:, np.newaxis] * X[s == si, :],
-                              axis=0)
+        for si in range(self.n_sfv_):
+            l[si, :] = np.sum((y - p)[s == si][:, np.newaxis] * X[s == si, :], axis=0)
 
         # fairness-aware regularizer
         # differentialy by w(s)
@@ -466,27 +468,24 @@ class LRwPRObjetiveType4Mixin(LRwPR):
         #     [ {sigma(xi, si) - pi} / {pi (1 - pi)} ] \
         #     * d_pi
 
-        f1 = (np.log(q[s]) - np.log(r)) \
-             - (np.log(1.0 - q[s]) - np.log(1.0 - r))
+        f1 = (np.log(q[s]) - np.log(r)) - (np.log(1.0 - q[s]) - np.log(1.0 - r))
         f2 = (p - q[s]) / (q[s] * (1.0 - q[s]))
         f3 = (p - r) / (r * (1.0 - r))
-        f4 = f1[:, np.newaxis] * dp \
-            + f2[:, np.newaxis] * dq[s, :] \
-            - np.outer(f3, dr)
-        f = np.array([np.sum(f4[s == si, :], axis=0)
-                      for si in xrange(self.n_sfv_)])
+        f4 = f1[:, np.newaxis] * dp + f2[:, np.newaxis] * dq[s, :] - np.outer(f3, dr)
+        f = np.array([np.sum(f4[s == si, :], axis=0) for si in range(self.n_sfv_)])
 
         # l2 regularizer
         reg = coef
 
         # sum
         l[:, :] = -l + self.eta * f + self.C * reg
-#        print >> sys.stderr, "l =", l
+        #        print >> sys.stderr, "l =", l
 
         return l_
 
+
 class LRwPRObjetiveType5Mixin(LRwPR):
-    """ objective function of logistic regression with prejudice remover
+    """objective function of logistic regression with prejudice remover
 
     Loss Function type 5: Weights for logistic regression are prepared for each
     value of S. Penalty for enhancing is defined as conditional entropy of Y
@@ -494,7 +493,7 @@ class LRwPRObjetiveType5Mixin(LRwPR):
     """
 
     def loss(self, coef_, X, y, s):
-        """ loss function: negative log - likelihood with l2 regularizer
+        """loss function: negative log - likelihood with l2 regularizer
         To suppress the warnings at np.log, do "np.seterr(all='ignore')
 
         Parameters
@@ -516,17 +515,15 @@ class LRwPRObjetiveType5Mixin(LRwPR):
 
         coef = coef_.reshape(self.n_sfv_, self.n_features_)
 
-#        print >> sys.stderr, "loss:", coef[0, :], coef[1, :]
+        #        print >> sys.stderr, "loss:", coef[0, :], coef[1, :]
 
         ### constants
 
         # sigma = Pr[y=0|x,s] = sigmoid(w(s)^T x)
-        p = np.array([sigmoid(X[i, :], coef[s[i], :])
-                      for i in xrange(self.n_samples_)])
+        p = np.array([sigmoid(X[i, :], coef[s[i], :]) for i in range(self.n_samples_)])
 
         # rho(s) = Pr[y=0|s] = \sum_{(xi,si)in D st si=s} sigma(xi,si) / #D[s]
-        q = np.array([np.sum(p[s == si])
-                      for si in xrange(self.n_sfv_)]) / self.c_s_
+        q = np.array([np.sum(p[s == si]) for si in range(self.n_sfv_)]) / self.c_s_
 
         ### loss function
 
@@ -544,11 +541,11 @@ class LRwPRObjetiveType5Mixin(LRwPR):
         reg = np.sum(coef * coef)
 
         l = -l + self.eta * f + 0.5 * self.C * reg
-#        print >> sys.stderr, l
+        #        print >> sys.stderr, l
         return l
 
     def grad_loss(self, coef_, X, y, s):
-        """ first derivative of loss function
+        """first derivative of loss function
 
         Parameters
         ----------
@@ -570,30 +567,28 @@ class LRwPRObjetiveType5Mixin(LRwPR):
         coef = coef_.reshape(self.n_sfv_, self.n_features_)
         l_ = np.empty(self.n_sfv_ * self.n_features_)
         l = l_.reshape(self.n_sfv_, self.n_features_)
-#        print >> sys.stderr, "grad_loss:", coef[0, :], coef[1, :]
+        #        print >> sys.stderr, "grad_loss:", coef[0, :], coef[1, :]
 
         ### constants
         # prefix "d_": derivertive by w(s)
 
         # sigma = Pr[y=0|x,s] = sigmoid(w(s)^T x)
         # d_sigma(x,s) = d sigma / d w(s) = sigma (1 - sigma) x
-        p = np.array([sigmoid(X[i, :], coef[s[i], :])
-                      for i in xrange(self.n_samples_)])
+        p = np.array([sigmoid(X[i, :], coef[s[i], :]) for i in range(self.n_samples_)])
         dp = (p * (1.0 - p))[:, np.newaxis] * X
 
         # rho(s) = Pr[y=0|s] = \sum_{(xi,si)in D st si=s} sigma(xi,si) / #D[s]
         # d_rho(s) = \sum_{(xi,si)in D st si=s} d_sigma(xi,si) / #D[s]
-        q = np.array([np.sum(p[s == si])
-                      for si in xrange(self.n_sfv_)]) / self.c_s_
-        dq = np.array([np.sum(dp[s == si, :], axis=0)
-                       for si in xrange(self.n_sfv_)]) \
-                       / self.c_s_[:, np.newaxis]
+        q = np.array([np.sum(p[s == si]) for si in range(self.n_sfv_)]) / self.c_s_
+        dq = (
+            np.array([np.sum(dp[s == si, :], axis=0) for si in range(self.n_sfv_)])
+            / self.c_s_[:, np.newaxis]
+        )
 
         # likelihood
         # l(si) = \sum_{x,y in D st s=si} (y - sigma(x, si)) x
-        for si in xrange(self.n_sfv_):
-            l[si, :] = np.sum((y - p)[s == si][:, np.newaxis] * X[s == si, :],
-                              axis=0)
+        for si in range(self.n_sfv_):
+            l[si, :] = np.sum((y - p)[s == si][:, np.newaxis] * X[s == si, :], axis=0)
 
         # fairness-aware regularizer
         # differentialy by w(s)
@@ -609,29 +604,28 @@ class LRwPRObjetiveType5Mixin(LRwPR):
 
         f1 = np.log(q[s]) - np.log(1.0 - q[s])
         f2 = (p - q[s]) / (q[s] * (1.0 - q[s]))
-        f4 = f1[:, np.newaxis] * dp \
-            + f2[:, np.newaxis] * dq[s, :]
-        f = np.array([np.sum(f4[s == si, :], axis=0)
-                      for si in xrange(self.n_sfv_)])
+        f4 = f1[:, np.newaxis] * dp + f2[:, np.newaxis] * dq[s, :]
+        f = np.array([np.sum(f4[s == si, :], axis=0) for si in range(self.n_sfv_)])
 
         # l2 regularizer
         reg = coef
 
         # sum
         l[:, :] = -l + self.eta * f + self.C * reg
-#        print >> sys.stderr, "l =", l
+        #        print >> sys.stderr, "l =", l
 
         return l_
 
+
 class LRwPRObjetiveType6Mixin(LRwPR):
-    """ objective function of logistic regression with prejudice remover
+    """objective function of logistic regression with prejudice remover
 
     Loss Function type 6: Only penalty for enhancing is defined as mutual
     information between value of S.
     """
 
     def loss(self, coef_, X, y, s):
-        """ loss function: negative log - likelihood with l2 regularizer
+        """loss function: negative log - likelihood with l2 regularizer
         To suppress the warnings at np.log, do "np.seterr(all='ignore')
 
         Parameters
@@ -653,17 +647,15 @@ class LRwPRObjetiveType6Mixin(LRwPR):
 
         coef = coef_.reshape(self.n_sfv_, self.n_features_)
 
-#        print >> sys.stderr, "loss:", coef[0, :], coef[1, :]
+        #        print >> sys.stderr, "loss:", coef[0, :], coef[1, :]
 
         ### constants
 
         # sigma = Pr[y=0|x,s] = sigmoid(w(s)^T x)
-        p = np.array([sigmoid(X[i, :], coef[s[i], :])
-                      for i in xrange(self.n_samples_)])
+        p = np.array([sigmoid(X[i, :], coef[s[i], :]) for i in range(self.n_samples_)])
 
         # rho(s) = Pr[y=0|s] = \sum_{(xi,si)in D st si=s} sigma(xi,si) / #D[s]
-        q = np.array([np.sum(p[s == si])
-                      for si in xrange(self.n_sfv_)]) / self.c_s_
+        q = np.array([np.sum(p[s == si]) for si in range(self.n_sfv_)]) / self.c_s_
 
         # pi = Pr[y=0] = \sum_{(xi,si)in D} sigma(xi,si)
         r = np.sum(p) / self.n_samples_
@@ -675,15 +667,17 @@ class LRwPRObjetiveType6Mixin(LRwPR):
         # \sum_{x,s in D} \
         #    sigma(x,x)       [log(rho(s))     - log(pi)    ] + \
         #    (1 - sigma(x,s)) [log(1 - rho(s)) - log(1 - pi)]
-        f = np.sum(p * (np.log(q[s]) - np.log(r))
-             + (1.0 - p) * (np.log(1.0 - q[s]) - np.log(1.0 - r)))
+        f = np.sum(
+            p * (np.log(q[s]) - np.log(r))
+            + (1.0 - p) * (np.log(1.0 - q[s]) - np.log(1.0 - r))
+        )
 
         l = self.eta * f
-#        print >> sys.stderr, l
+        #        print >> sys.stderr, l
         return l
 
     def grad_loss(self, coef_, X, y, s):
-        """ first derivative of loss function
+        """first derivative of loss function
 
         Parameters
         ----------
@@ -705,24 +699,23 @@ class LRwPRObjetiveType6Mixin(LRwPR):
         coef = coef_.reshape(self.n_sfv_, self.n_features_)
         l_ = np.empty(self.n_sfv_ * self.n_features_)
         l = l_.reshape(self.n_sfv_, self.n_features_)
-#        print >> sys.stderr, "grad_loss:", coef[0, :], coef[1, :]
+        #        print >> sys.stderr, "grad_loss:", coef[0, :], coef[1, :]
 
         ### constants
         # prefix "d_": derivertive by w(s)
 
         # sigma = Pr[y=0|x,s] = sigmoid(w(s)^T x)
         # d_sigma(x,s) = d sigma / d w(s) = sigma (1 - sigma) x
-        p = np.array([sigmoid(X[i, :], coef[s[i], :])
-                      for i in xrange(self.n_samples_)])
+        p = np.array([sigmoid(X[i, :], coef[s[i], :]) for i in range(self.n_samples_)])
         dp = (p * (1.0 - p))[:, np.newaxis] * X
 
         # rho(s) = Pr[y=0|s] = \sum_{(xi,si)in D st si=s} sigma(xi,si) / #D[s]
         # d_rho(s) = \sum_{(xi,si)in D st si=s} d_sigma(xi,si) / #D[s]
-        q = np.array([np.sum(p[s == si])
-                      for si in xrange(self.n_sfv_)]) / self.c_s_
-        dq = np.array([np.sum(dp[s == si, :], axis=0)
-                       for si in xrange(self.n_sfv_)]) \
-                       / self.c_s_[:, np.newaxis]
+        q = np.array([np.sum(p[s == si]) for si in range(self.n_sfv_)]) / self.c_s_
+        dq = (
+            np.array([np.sum(dp[s == si, :], axis=0) for si in range(self.n_sfv_)])
+            / self.c_s_[:, np.newaxis]
+        )
 
         # pi = Pr[y=0] = \sum_{(xi,si)in D} sigma(xi,si) / #D
         # d_pi = \sum_{(xi,si)in D} d_sigma(xi,si) / #D
@@ -741,30 +734,27 @@ class LRwPRObjetiveType6Mixin(LRwPR):
         #     [ {sigma(xi, si) - pi} / {pi (1 - pi)} ] \
         #     * d_pi
 
-        f1 = (np.log(q[s]) - np.log(r)) \
-             - (np.log(1.0 - q[s]) - np.log(1.0 - r))
+        f1 = (np.log(q[s]) - np.log(r)) - (np.log(1.0 - q[s]) - np.log(1.0 - r))
         f2 = (p - q[s]) / (q[s] * (1.0 - q[s]))
         f3 = (p - r) / (r * (1.0 - r))
-        f4 = f1[:, np.newaxis] * dp \
-            + f2[:, np.newaxis] * dq[s, :] \
-            - np.outer(f3, dr)
-        f = np.array([np.sum(f4[s == si, :], axis=0)
-                      for si in xrange(self.n_sfv_)])
+        f4 = f1[:, np.newaxis] * dp + f2[:, np.newaxis] * dq[s, :] - np.outer(f3, dr)
+        f = np.array([np.sum(f4[s == si, :], axis=0) for si in range(self.n_sfv_)])
 
         # sum
         l[:, :] = self.eta * f
-#        print >> sys.stderr, "l =", l
+        #        print >> sys.stderr, "l =", l
 
         return l_
 
+
 class LRwPRObjetiveType7Mixin(LRwPR):
-    """ objective function of logistic regression with prejudice remover
+    """objective function of logistic regression with prejudice remover
 
     Loss Function type 7: Almost same as type 4, but no L2 regularizer is used.
     """
 
     def loss(self, coef_, X, y, s):
-        """ loss function: negative log - likelihood with l2 regularizer
+        """loss function: negative log - likelihood with l2 regularizer
         To suppress the warnings at np.log, do "np.seterr(all='ignore')
 
         Parameters
@@ -786,17 +776,15 @@ class LRwPRObjetiveType7Mixin(LRwPR):
 
         coef = coef_.reshape(self.n_sfv_, self.n_features_)
 
-#        print >> sys.stderr, "loss:", coef[0, :], coef[1, :]
+        #        print >> sys.stderr, "loss:", coef[0, :], coef[1, :]
 
         ### constants
 
         # sigma = Pr[y=0|x,s] = sigmoid(w(s)^T x)
-        p = np.array([sigmoid(X[i, :], coef[s[i], :])
-                      for i in xrange(self.n_samples_)])
+        p = np.array([sigmoid(X[i, :], coef[s[i], :]) for i in range(self.n_samples_)])
 
         # rho(s) = Pr[y=0|s] = \sum_{(xi,si)in D st si=s} sigma(xi,si) / #D[s]
-        q = np.array([np.sum(p[s == si])
-                      for si in xrange(self.n_sfv_)]) / self.c_s_
+        q = np.array([np.sum(p[s == si]) for si in range(self.n_sfv_)]) / self.c_s_
 
         # pi = Pr[y=0] = \sum_{(xi,si)in D} sigma(xi,si)
         r = np.sum(p) / self.n_samples_
@@ -811,15 +799,17 @@ class LRwPRObjetiveType7Mixin(LRwPR):
         # \sum_{x,s in D} \
         #    sigma(x,x)       [log(rho(s))     - log(pi)    ] + \
         #    (1 - sigma(x,s)) [log(1 - rho(s)) - log(1 - pi)]
-        f = np.sum(p * (np.log(q[s]) - np.log(r))
-             + (1.0 - p) * (np.log(1.0 - q[s]) - np.log(1.0 - r)))
+        f = np.sum(
+            p * (np.log(q[s]) - np.log(r))
+            + (1.0 - p) * (np.log(1.0 - q[s]) - np.log(1.0 - r))
+        )
 
         l = -l + self.eta * f
-#        print >> sys.stderr, l
+        #        print >> sys.stderr, l
         return l
 
     def grad_loss(self, coef_, X, y, s):
-        """ first derivative of loss function
+        """first derivative of loss function
 
         Parameters
         ----------
@@ -841,24 +831,23 @@ class LRwPRObjetiveType7Mixin(LRwPR):
         coef = coef_.reshape(self.n_sfv_, self.n_features_)
         l_ = np.empty(self.n_sfv_ * self.n_features_)
         l = l_.reshape(self.n_sfv_, self.n_features_)
-#        print >> sys.stderr, "grad_loss:", coef[0, :], coef[1, :]
+        #        print >> sys.stderr, "grad_loss:", coef[0, :], coef[1, :]
 
         ### constants
         # prefix "d_": derivertive by w(s)
 
         # sigma = Pr[y=0|x,s] = sigmoid(w(s)^T x)
         # d_sigma(x,s) = d sigma / d w(s) = sigma (1 - sigma) x
-        p = np.array([sigmoid(X[i, :], coef[s[i], :])
-                      for i in xrange(self.n_samples_)])
+        p = np.array([sigmoid(X[i, :], coef[s[i], :]) for i in range(self.n_samples_)])
         dp = (p * (1.0 - p))[:, np.newaxis] * X
 
         # rho(s) = Pr[y=0|s] = \sum_{(xi,si)in D st si=s} sigma(xi,si) / #D[s]
         # d_rho(s) = \sum_{(xi,si)in D st si=s} d_sigma(xi,si) / #D[s]
-        q = np.array([np.sum(p[s == si])
-                      for si in xrange(self.n_sfv_)]) / self.c_s_
-        dq = np.array([np.sum(dp[s == si, :], axis=0)
-                       for si in xrange(self.n_sfv_)]) \
-                       / self.c_s_[:, np.newaxis]
+        q = np.array([np.sum(p[s == si]) for si in range(self.n_sfv_)]) / self.c_s_
+        dq = (
+            np.array([np.sum(dp[s == si, :], axis=0) for si in range(self.n_sfv_)])
+            / self.c_s_[:, np.newaxis]
+        )
 
         # pi = Pr[y=0] = \sum_{(xi,si)in D} sigma(xi,si) / #D
         # d_pi = \sum_{(xi,si)in D} d_sigma(xi,si) / #D
@@ -867,9 +856,8 @@ class LRwPRObjetiveType7Mixin(LRwPR):
 
         # likelihood
         # l(si) = \sum_{x,y in D st s=si} (y - sigma(x, si)) x
-        for si in xrange(self.n_sfv_):
-            l[si, :] = np.sum((y - p)[s == si][:, np.newaxis] * X[s == si, :],
-                              axis=0)
+        for si in range(self.n_sfv_):
+            l[si, :] = np.sum((y - p)[s == si][:, np.newaxis] * X[s == si, :], axis=0)
 
         # fairness-aware regularizer
         # differentialy by w(s)
@@ -883,27 +871,23 @@ class LRwPRObjetiveType7Mixin(LRwPR):
         #     [ {sigma(xi, si) - pi} / {pi (1 - pi)} ] \
         #     * d_pi
 
-        f1 = (np.log(q[s]) - np.log(r)) \
-             - (np.log(1.0 - q[s]) - np.log(1.0 - r))
+        f1 = (np.log(q[s]) - np.log(r)) - (np.log(1.0 - q[s]) - np.log(1.0 - r))
         f2 = (p - q[s]) / (q[s] * (1.0 - q[s]))
         f3 = (p - r) / (r * (1.0 - r))
-        f4 = f1[:, np.newaxis] * dp \
-            + f2[:, np.newaxis] * dq[s, :] \
-            - np.outer(f3, dr)
-        f = np.array([np.sum(f4[s == si, :], axis=0)
-                      for si in xrange(self.n_sfv_)])
+        f4 = f1[:, np.newaxis] * dp + f2[:, np.newaxis] * dq[s, :] - np.outer(f3, dr)
+        f = np.array([np.sum(f4[s == si, :], axis=0) for si in range(self.n_sfv_)])
 
         # sum
         l[:, :] = -l + self.eta * f
-#        print >> sys.stderr, "l =", l
+        #        print >> sys.stderr, "l =", l
 
         return l_
 
-class LRwPRType4\
-    (LRwPRObjetiveType4Mixin,
-     LRwPRFittingType1Mixin,
-     LRwPRPredictProbaType2Mixin):
-    """ Two class LogisticRegression with Prejudice Remover
+
+class LRwPRType4(
+    LRwPRObjetiveType4Mixin, LRwPRFittingType1Mixin, LRwPRPredictProbaType2Mixin
+):
+    """Two class LogisticRegression with Prejudice Remover
 
     Parameters
     ----------
@@ -917,11 +901,11 @@ class LRwPRType4\
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty='l2'):
+    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType4, self).\
-            __init__(C=C, eta=eta,
-                     fit_intercept=fit_intercept, penalty=penalty)
+        super(LRwPRType4, self).__init__(
+            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
+        )
 
         self.coef_ = None
         self.mx_ = None
@@ -929,11 +913,11 @@ class LRwPRType4\
         self.n_sfv_ = 0
         self.minor_type = 4
 
-class LRwPRType5\
-    (LRwPRObjetiveType4Mixin,
-     LRwPRFittingType1Mixin,
-     LRwPRPredictProbaType3Mixin):
-    """ Two class LogisticRegression with Prejudice Remover
+
+class LRwPRType5(
+    LRwPRObjetiveType4Mixin, LRwPRFittingType1Mixin, LRwPRPredictProbaType3Mixin
+):
+    """Two class LogisticRegression with Prejudice Remover
 
     Parameters
     ----------
@@ -947,11 +931,11 @@ class LRwPRType5\
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty='l2'):
+    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType5, self).\
-            __init__(C=C, eta=eta,
-                     fit_intercept=fit_intercept, penalty=penalty)
+        super(LRwPRType5, self).__init__(
+            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
+        )
 
         self.coef_ = None
         self.mx_ = None
@@ -959,11 +943,11 @@ class LRwPRType5\
         self.n_sfv_ = 0
         self.minor_type = 5
 
-class LRwPRType6\
-    (LRwPRObjetiveType5Mixin,
-     LRwPRFittingType1Mixin,
-     LRwPRPredictProbaType2Mixin):
-    """ Two class LogisticRegression with Prejudice Remover
+
+class LRwPRType6(
+    LRwPRObjetiveType5Mixin, LRwPRFittingType1Mixin, LRwPRPredictProbaType2Mixin
+):
+    """Two class LogisticRegression with Prejudice Remover
 
     Parameters
     ----------
@@ -977,11 +961,11 @@ class LRwPRType6\
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty='l2'):
+    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType6, self).\
-            __init__(C=C, eta=eta,
-                     fit_intercept=fit_intercept, penalty=penalty)
+        super(LRwPRType6, self).__init__(
+            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
+        )
 
         self.coef_ = None
         self.mx_ = None
@@ -989,11 +973,11 @@ class LRwPRType6\
         self.n_sfv_ = 0
         self.minor_type = 6
 
-class LRwPRType7\
-    (LRwPRObjetiveType5Mixin,
-     LRwPRFittingType1Mixin,
-     LRwPRPredictProbaType3Mixin):
-    """ Two class LogisticRegression with Prejudice Remover
+
+class LRwPRType7(
+    LRwPRObjetiveType5Mixin, LRwPRFittingType1Mixin, LRwPRPredictProbaType3Mixin
+):
+    """Two class LogisticRegression with Prejudice Remover
 
     Parameters
     ----------
@@ -1007,11 +991,11 @@ class LRwPRType7\
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty='l2'):
+    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType7, self).\
-            __init__(C=C, eta=eta,
-                     fit_intercept=fit_intercept, penalty=penalty)
+        super(LRwPRType7, self).__init__(
+            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
+        )
 
         self.coef_ = None
         self.mx_ = None
@@ -1019,11 +1003,11 @@ class LRwPRType7\
         self.n_sfv_ = 0
         self.minor_type = 7
 
-class LRwPRType8\
-    (LRwPRObjetiveType6Mixin,
-     LRwPRFittingType1Mixin,
-     LRwPRPredictProbaType2Mixin):
-    """ Two class LogisticRegression with Prejudice Remover
+
+class LRwPRType8(
+    LRwPRObjetiveType6Mixin, LRwPRFittingType1Mixin, LRwPRPredictProbaType2Mixin
+):
+    """Two class LogisticRegression with Prejudice Remover
 
     Parameters
     ----------
@@ -1037,11 +1021,11 @@ class LRwPRType8\
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty='l2'):
+    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType8, self).\
-            __init__(C=C, eta=eta,
-                     fit_intercept=fit_intercept, penalty=penalty)
+        super(LRwPRType8, self).__init__(
+            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
+        )
 
         self.coef_ = None
         self.mx_ = None
@@ -1049,11 +1033,11 @@ class LRwPRType8\
         self.n_sfv_ = 0
         self.minor_type = 8
 
-class LRwPRType9\
-    (LRwPRObjetiveType6Mixin,
-     LRwPRFittingType1Mixin,
-     LRwPRPredictProbaType3Mixin):
-    """ Two class LogisticRegression with Prejudice Remover
+
+class LRwPRType9(
+    LRwPRObjetiveType6Mixin, LRwPRFittingType1Mixin, LRwPRPredictProbaType3Mixin
+):
+    """Two class LogisticRegression with Prejudice Remover
 
     Parameters
     ----------
@@ -1067,11 +1051,11 @@ class LRwPRType9\
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty='l2'):
+    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType9, self).\
-            __init__(C=C, eta=eta,
-                     fit_intercept=fit_intercept, penalty=penalty)
+        super(LRwPRType9, self).__init__(
+            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
+        )
 
         self.coef_ = None
         self.mx_ = None
@@ -1079,11 +1063,11 @@ class LRwPRType9\
         self.n_sfv_ = 0
         self.minor_type = 9
 
-class LRwPRType10\
-    (LRwPRObjetiveType7Mixin,
-     LRwPRFittingType1Mixin,
-     LRwPRPredictProbaType2Mixin):
-    """ Two class LogisticRegression with Prejudice Remover
+
+class LRwPRType10(
+    LRwPRObjetiveType7Mixin, LRwPRFittingType1Mixin, LRwPRPredictProbaType2Mixin
+):
+    """Two class LogisticRegression with Prejudice Remover
 
     Parameters
     ----------
@@ -1097,11 +1081,11 @@ class LRwPRType10\
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty='l2'):
+    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType10, self).\
-            __init__(C=C, eta=eta,
-                     fit_intercept=fit_intercept, penalty=penalty)
+        super(LRwPRType10, self).__init__(
+            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
+        )
 
         self.coef_ = None
         self.mx_ = None
@@ -1109,11 +1093,11 @@ class LRwPRType10\
         self.n_sfv_ = 0
         self.minor_type = 10
 
-class LRwPRType11\
-    (LRwPRObjetiveType7Mixin,
-     LRwPRFittingType1Mixin,
-     LRwPRPredictProbaType3Mixin):
-    """ Two class LogisticRegression with Prejudice Remover
+
+class LRwPRType11(
+    LRwPRObjetiveType7Mixin, LRwPRFittingType1Mixin, LRwPRPredictProbaType3Mixin
+):
+    """Two class LogisticRegression with Prejudice Remover
 
     Parameters
     ----------
@@ -1127,11 +1111,11 @@ class LRwPRType11\
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty='l2'):
+    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LRwPRType11, self).\
-            __init__(C=C, eta=eta,
-                     fit_intercept=fit_intercept, penalty=penalty)
+        super(LRwPRType11, self).__init__(
+            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
+        )
 
         self.coef_ = None
         self.mx_ = None
@@ -1139,23 +1123,24 @@ class LRwPRType11\
         self.n_sfv_ = 0
         self.minor_type = 11
 
-#==============================================================================
+
+# ==============================================================================
 # Module initialization
-#==============================================================================
+# ==============================================================================
 
 # init logging system
 
-logger = logging.getLogger('fadm')
+logger = logging.getLogger("fadm")
 if not logger.handlers:
     logger.addHandler(logging.NullHandler)
 
-#==============================================================================
+# ==============================================================================
 # Test routine
-#==============================================================================
+# ==============================================================================
+
 
 def _test():
-    """ test function for this module
-    """
+    """test function for this module"""
 
     # perform doctest
     import sys
@@ -1165,7 +1150,8 @@ def _test():
 
     sys.exit(0)
 
+
 # Check if this is call as command script
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _test()

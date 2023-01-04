@@ -7,7 +7,7 @@ convert credit-g.data => creditg_p.data
 import sys
 
 for line in sys.stdin.readlines():
-    line = line.rstrip('\r\n')
+    line = line.rstrip("\r\n")
 
     f = line.split(" ")
     sys.stdout.write(" ".join(f[0:8]) + " ")
@@ -17,4 +17,3 @@ for line in sys.stdin.readlines():
     else:
         sys.stdout.write("1 ")
     sys.stdout.write(str(1 - int(f[20])) + "\n")
-

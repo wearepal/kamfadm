@@ -8,45 +8,47 @@ naive Bayes classifier that can update incrementally
 scikit-learn compatible interface
 """
 
-#==============================================================================
+# ==============================================================================
 # Module metadata variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Imports
-#==============================================================================
+# ==============================================================================
 
 import logging
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 
-#==============================================================================
+# ==============================================================================
 # Public symbols
-#==============================================================================
+# ==============================================================================
 
-__all__ = ['BayesianClassifierMixin',
-           'GaussianNaiveBayes',
-           'MultinomialNaiveBayes',
-           'CompositeNaiveBayes']
+__all__ = [
+    "BayesianClassifierMixin",
+    "GaussianNaiveBayes",
+    "MultinomialNaiveBayes",
+    "CompositeNaiveBayes",
+]
 
-#==============================================================================
+# ==============================================================================
 # Constants
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Module variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Classes
-#==============================================================================
+# ==============================================================================
+
 
 class BayesianClassifierMixin(object):
-    """ Mix-in for Probabilistic Classifiers
-    """
+    """Mix-in for Probabilistic Classifiers"""
 
     def predict(self, X):
-        """ predict class
+        """predict class
 
         Parameters
         ----------
@@ -64,7 +66,7 @@ class BayesianClassifierMixin(object):
         return np.argmax(log_proba, axis=1)
 
     def predict_proba(self, X):
-        """ predict probabilities
+        """predict probabilities
 
         Parameters
         ----------
@@ -79,11 +81,10 @@ class BayesianClassifierMixin(object):
 
         log_proba = self._predict_log_proba_upto_const(np.array(X))
 
-        return np.exp(log_proba) / \
-            np.sum(np.exp(log_proba), axis=1)[:, np.newaxis]
+        return np.exp(log_proba) / np.sum(np.exp(log_proba), axis=1)[:, np.newaxis]
 
     def predict_log_proba(self, X):
-        """ predict probabilities
+        """predict probabilities
 
         Parameters
         ----------
@@ -101,9 +102,10 @@ class BayesianClassifierMixin(object):
 
         return log_proba - const_term[:, np.newaxis]
 
+
 class BaseNaiveBayes(BaseEstimator, BayesianClassifierMixin, ClassifierMixin):
-    """ a base class for a naive Bayes classifier
-    
+    """a base class for a naive Bayes classifier
+
     Parameters
     ----------
     n_classes : int, default=2
@@ -127,12 +129,11 @@ class BaseNaiveBayes(BaseEstimator, BayesianClassifierMixin, ClassifierMixin):
         self.n_samples = 0
 
         # class param init
-        self.py_ = np.repeat(self.alpha / float(self.n_classes),
-                             self.n_classes)
+        self.py_ = np.repeat(self.alpha / float(self.n_classes), self.n_classes)
 
     def _update_total_and_class_params(self, y, n_y_samples):
-        """ update a class pmf and the number of samples
-        
+        """update a class pmf and the number of samples
+
         Parameters
         ----------
         y : int
@@ -145,14 +146,14 @@ class BaseNaiveBayes(BaseEstimator, BayesianClassifierMixin, ClassifierMixin):
         self.py_[y] += float(n_y_samples)
 
     def _predict_class_log_proba_upto_const(self):
-        """ log of class probability parameters
-        """
+        """log of class probability parameters"""
 
         return np.log(self.py_)
 
+
 class GaussianNaiveBayes(BaseNaiveBayes):
-    """ naive Bayes classifier, p[x_i|c] follows Gaussian distribution.
-    
+    """naive Bayes classifier, p[x_i|c] follows Gaussian distribution.
+
     - If a input feature takes NaN, the feature is ignored in prediction and
       fitting.
     - If features whose variance is 0 or infinity, the features are igrenored
@@ -185,12 +186,11 @@ class GaussianNaiveBayes(BaseNaiveBayes):
 
     def __init__(self, n_classes, n_gfeatures, alpha=1.0):
 
-        super(GaussianNaiveBayes, self).__init__(n_classes, n_gfeatures,
-                                                   alpha)
+        super(GaussianNaiveBayes, self).__init__(n_classes, n_gfeatures, alpha)
         self._init_Gaussian_naive_Bayes(n_gfeatures)
 
     def _init_Gaussian_naive_Bayes(self, n_gfeatures):
-        """ init Gaussian naive Bayes parameters
+        """init Gaussian naive Bayes parameters
 
         Parameters
         ----------
@@ -199,8 +199,7 @@ class GaussianNaiveBayes(BaseNaiveBayes):
         """
 
         self.n_gfeatures = n_gfeatures
-        self.n_valid_samples_ = np.zeros((self.n_classes, self.n_gfeatures),
-                                         dtype=int)
+        self.n_valid_samples_ = np.zeros((self.n_classes, self.n_gfeatures), dtype=int)
         self._x_sum = np.zeros((self.n_classes, self.n_gfeatures))
         self._x_sqsum = np.zeros((self.n_classes, self.n_gfeatures))
         self.f_valid_ = np.repeat(False, self.n_gfeatures)
@@ -209,8 +208,8 @@ class GaussianNaiveBayes(BaseNaiveBayes):
         self.x_var_ = np.empty((self.n_classes, self.n_gfeatures))
 
     def _update_Gaussian_params(self, X, yi):
-        """ update model parameters
-        
+        """update model parameters
+
         Parameters
         ----------
         X : array-like, shape=(n_gfeatures)
@@ -223,11 +222,11 @@ class GaussianNaiveBayes(BaseNaiveBayes):
 
         finite_X = np.choose(np.isfinite(X), [0.0, X])
         self._x_sum[yi, :] += np.sum(finite_X, axis=0)
-        self._x_sqsum[yi, :] += np.sum(finite_X ** 2, axis=0)
+        self._x_sqsum[yi, :] += np.sum(finite_X**2, axis=0)
         self.is_valid_params_ = False
 
     def partial_fit(self, X, y):
-        """ update model given one example
+        """update model given one example
 
         Parameters
         ----------
@@ -245,7 +244,7 @@ class GaussianNaiveBayes(BaseNaiveBayes):
             self._update_Gaussian_params(X[y == yi, :], yi)
 
     def fit(self, X, y):
-        """ update model given one example
+        """update model given one example
 
         Parameters
         ----------
@@ -259,7 +258,7 @@ class GaussianNaiveBayes(BaseNaiveBayes):
         self.partial_fit(X, y)
 
     def _predict_log_proba_upto_const(self, X):
-        """ log probabilities up to constant term
+        """log probabilities up to constant term
 
         Parameters
         ----------
@@ -277,18 +276,18 @@ class GaussianNaiveBayes(BaseNaiveBayes):
             self._update_mean_var()
 
         # calc feature log likelihood
-        log_proba = np.repeat(\
+        log_proba = np.repeat(
             self._predict_class_log_proba_upto_const()[np.newaxis, :],
-            X.shape[0], axis=0)
-        for i in xrange(X.shape[0]):
-            log_proba[i, :] += \
-                self._predict_Gaussian_log_proba_upto_const(X[i, :])
+            X.shape[0],
+            axis=0,
+        )
+        for i in range(X.shape[0]):
+            log_proba[i, :] += self._predict_Gaussian_log_proba_upto_const(X[i, :])
 
         return log_proba
 
     def _update_mean_var(self):
-        """ update internal mean and variance parameters
-        """
+        """update internal mean and variance parameters"""
 
         self.f_valid_ = np.all(self.n_valid_samples_ > 1, axis=0)
         if not np.any(self.f_valid_):
@@ -297,16 +296,16 @@ class GaussianNaiveBayes(BaseNaiveBayes):
 
         v = self.f_valid_
         self.x_mean_[:, v] = self._x_sum[:, v] / self.n_valid_samples_[:, v]
-        self.x_var_[:, v] = (self._x_sqsum[:, v] /
-                             self.n_valid_samples_[:, v]) \
-            - (self.x_mean_[:, v] ** 2)
+        self.x_var_[:, v] = (self._x_sqsum[:, v] / self.n_valid_samples_[:, v]) - (
+            self.x_mean_[:, v] ** 2
+        )
 
         self.f_valid_[v] = np.all(self.x_var_[:, v], axis=0)
         self.is_valid_params_ = True
 
     def _predict_Gaussian_log_proba_upto_const(self, x):
-        """ log probability of the given feature value
-        
+        """log probability of the given feature value
+
         Parameters
         ----------
         x : array-like, shape=(n_gfeatures), dtype=float
@@ -318,19 +317,17 @@ class GaussianNaiveBayes(BaseNaiveBayes):
             log probability of the given feature value
         """
 
-        log_normal_pdf = lambda x, m, v: \
-            - np.log(v) / 2.0 - (x - m) ** 2 / (2.0 * v)
+        log_normal_pdf = lambda x, m, v: -np.log(v) / 2.0 - (x - m) ** 2 / (2.0 * v)
 
         f = np.logical_and(self.f_valid_, np.isfinite(x))
-        log_proba = np.sum(log_normal_pdf(x[f],
-                                          self.x_mean_[:, f],
-                                          self.x_var_[:, f]),
-                           axis=1)
+        log_proba = np.sum(
+            log_normal_pdf(x[f], self.x_mean_[:, f], self.x_var_[:, f]), axis=1
+        )
 
         return log_proba
 
     def _get_mean_var(self):
-        """ returns mean and variance parameters
+        """returns mean and variance parameters
 
         Returns
         -------
@@ -346,9 +343,10 @@ class GaussianNaiveBayes(BaseNaiveBayes):
 
         return self.x_mean_, self.x_var_
 
+
 class MultinomialNaiveBayes(BaseNaiveBayes):
-    """ naive Bayes classifier, p[x_i|c] follows Multinomial distribution
-    
+    """naive Bayes classifier, p[x_i|c] follows Multinomial distribution
+
     The values that ranges in [j,j+1) are treated as the j-th feature value.
     The j must be in {0,...,nfv[i]-1}
 
@@ -375,12 +373,11 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
 
     def __init__(self, n_classes, n_mfeatures, nfv, alpha=1.0, beta=1.0):
         # init base class
-        super(MultinomialNaiveBayes, self).__init__(n_classes, n_mfeatures,
-                                                      alpha)
+        super(MultinomialNaiveBayes, self).__init__(n_classes, n_mfeatures, alpha)
         self._init_Multinomial_naive_Bayes(n_mfeatures, np.array(nfv), beta)
 
     def _init_Multinomial_naive_Bayes(self, n_mfeatures, nfv, beta):
-        """ init Multinomial naive Bayes parameters
+        """init Multinomial naive Bayes parameters
 
         Parameters
         ----------
@@ -397,13 +394,15 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
         self.beta = beta
 
         self.pf_ = []
-        for i in xrange(self.n_mfeatures):
-            self.pf_.append(np.repeat(self.beta / np.float(self.nfv[i]),
-                                      self.n_classes * self.nfv[i]).\
-                                      reshape((self.n_classes, self.nfv[i])))
+        for i in range(self.n_mfeatures):
+            self.pf_.append(
+                np.repeat(
+                    self.beta / np.float(self.nfv[i]), self.n_classes * self.nfv[i]
+                ).reshape((self.n_classes, self.nfv[i]))
+            )
 
     def _update_Multinomial_params(self, X, y):
-        """ update model parameters
+        """update model parameters
 
         Parameters
         ----------
@@ -413,14 +412,16 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
             class
         """
 
-        for fi in xrange(self.n_mfeatures):
-            self.pf_[fi] += np.histogram2d(y, X[:, fi],
-                                           bins=(self.n_classes, self.nfv[fi]),
-                                           range=((0, self.n_classes),
-                                                  (0, self.nfv[fi])))[0]
+        for fi in range(self.n_mfeatures):
+            self.pf_[fi] += np.histogram2d(
+                y,
+                X[:, fi],
+                bins=(self.n_classes, self.nfv[fi]),
+                range=((0, self.n_classes), (0, self.nfv[fi])),
+            )[0]
 
     def partial_fit(self, X, y):
-        """ update model given one example
+        """update model given one example
 
         Parameters
         ----------
@@ -441,7 +442,7 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
         self._update_Multinomial_params(X, y)
 
     def fit(self, X, y):
-        """ update model given one example
+        """update model given one example
 
         Parameters
         ----------
@@ -451,12 +452,17 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
             class
         """
 
-        self.__init__(self.n_classes, self.n_features,
-                      nfv=self.nfv, alpha=self.alpha, beta=self.beta)
+        self.__init__(
+            self.n_classes,
+            self.n_features,
+            nfv=self.nfv,
+            alpha=self.alpha,
+            beta=self.beta,
+        )
         self.partial_fit(X, y)
 
     def _predict_log_proba_upto_const(self, X):
-        """ log probabilities up to constant term
+        """log probabilities up to constant term
 
         Parameters
         ----------
@@ -469,19 +475,20 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
             log probabilities up to constant term
         """
 
-        log_proba = np.repeat(\
+        log_proba = np.repeat(
             self._predict_class_log_proba_upto_const()[np.newaxis, :],
-            X.shape[0], axis=0)
+            X.shape[0],
+            axis=0,
+        )
 
-        for i in xrange(X.shape[0]):
-            log_proba[i, :] = \
-                self._predict_multinomial_log_proba_upto_const(X[i, :])
+        for i in range(X.shape[0]):
+            log_proba[i, :] = self._predict_multinomial_log_proba_upto_const(X[i, :])
 
         return log_proba
 
     def _predict_multinomial_log_proba_upto_const(self, x):
-        """ log probability of the given feature value
-        
+        """log probability of the given feature value
+
         Parameters
         ----------
         x : array-like, shape=(n_mfeatures), dtype=float
@@ -497,19 +504,21 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
         if len(f) == 0:
             return np.zeros(self.n_classes)
 
-        p = lambda i: np.log(self.pf_[i][:, int(x[i])]) \
-            - np.log(np.sum(self.pf_[i], axis=1))
+        p = lambda i: np.log(self.pf_[i][:, int(x[i])]) - np.log(
+            np.sum(self.pf_[i], axis=1)
+        )
         log_proba = np.sum([p(i) for i in f], axis=0)
 
         return log_proba
 
+
 class CompositeNaiveBayes(MultinomialNaiveBayes, GaussianNaiveBayes):
-    """ naive Bayes classifier, p[x_i|c] follows Multinomial or Gaussian
+    """naive Bayes classifier, p[x_i|c] follows Multinomial or Gaussian
     distribution
-    
+
     The values that ranges in [j,j+1) are treated as the j-th feature value.
-    The j must be in {0,...,nfv[i]-1}. 
-    
+    The j must be in {0,...,nfv[i]-1}.
+
 
     Attributes
     ----------
@@ -527,16 +536,17 @@ class CompositeNaiveBayes(MultinomialNaiveBayes, GaussianNaiveBayes):
     def __init__(self, n_classes, n_features, nfv, alpha=1.0, beta=1.0):
 
         nfv = np.array(nfv)
-        self.gfeatures = (nfv == 0)
-        self.mfeatures = (nfv >= 2)
+        self.gfeatures = nfv == 0
+        self.mfeatures = nfv >= 2
 
         BaseNaiveBayes.__init__(self, n_classes, n_features, alpha)
         self._init_Gaussian_naive_Bayes(np.sum(self.gfeatures))
-        self._init_Multinomial_naive_Bayes(np.sum(self.mfeatures),
-                                           nfv[self.mfeatures], beta)
+        self._init_Multinomial_naive_Bayes(
+            np.sum(self.mfeatures), nfv[self.mfeatures], beta
+        )
 
     def partial_fit(self, X, y):
-        """ update model given one example
+        """update model given one example
 
         Parameters
         ----------
@@ -556,16 +566,14 @@ class CompositeNaiveBayes(MultinomialNaiveBayes, GaussianNaiveBayes):
         # update parameters of Gaussian distributions
         if self.n_gfeatures > 0:
             for yi in np.unique(y):
-                self._update_Gaussian_params(
-                    (X[y == yi, :])[:, self.gfeatures],
-                    yi)
+                self._update_Gaussian_params((X[y == yi, :])[:, self.gfeatures], yi)
 
         # update parameters of multinomial distributions
         if self.n_mfeatures:
             self._update_Multinomial_params(X[:, self.mfeatures], y)
 
     def fit(self, X, y):
-        """ update model given one example
+        """update model given one example
 
         Parameters
         ----------
@@ -575,16 +583,14 @@ class CompositeNaiveBayes(MultinomialNaiveBayes, GaussianNaiveBayes):
             class
         """
         # init parameters
-        BaseNaiveBayes.__init__(self, self.n_classes, self.n_features,
-                                  self.alpha)
+        BaseNaiveBayes.__init__(self, self.n_classes, self.n_features, self.alpha)
         self._init_Gaussian_naive_Bayes(self.n_gfeatures)
-        self._init_Multinomial_naive_Bayes(self.n_mfeatures,
-                                           self.nfv, self.beta)
+        self._init_Multinomial_naive_Bayes(self.n_mfeatures, self.nfv, self.beta)
 
         self.partial_fit(X, y)
 
     def _predict_log_proba_upto_const(self, X):
-        """ log probabilities up to constant term
+        """log probabilities up to constant term
 
         Parameters
         ----------
@@ -596,16 +602,18 @@ class CompositeNaiveBayes(MultinomialNaiveBayes, GaussianNaiveBayes):
         """
 
         # class probabilities
-        log_proba = np.repeat(\
+        log_proba = np.repeat(
             self._predict_class_log_proba_upto_const()[np.newaxis, :],
-            X.shape[0], axis=0)
+            X.shape[0],
+            axis=0,
+        )
 
         log_proba += self._predict_composite_log_proba_upto_const(X)
 
         return log_proba
 
     def _predict_composite_log_proba_upto_const(self, X):
-        """ log probabilities up to constant term
+        """log probabilities up to constant term
 
         Parameters
         ----------
@@ -626,39 +634,42 @@ class CompositeNaiveBayes(MultinomialNaiveBayes, GaussianNaiveBayes):
         if self.n_gfeatures > 0:
             if not self.is_valid_params_:
                 self._update_mean_var()
-            for i in xrange(X.shape[0]):
-                log_proba[i, :] += \
-                    self._predict_Gaussian_log_proba_upto_const(X[i, self.gfeatures])
+            for i in range(X.shape[0]):
+                log_proba[i, :] += self._predict_Gaussian_log_proba_upto_const(
+                    X[i, self.gfeatures]
+                )
 
         # multinomial probabiliteis
         if self.n_mfeatures > 0:
-            for i in xrange(X.shape[0]):
-                log_proba[i, :] += \
-                    self._predict_multinomial_log_proba_upto_const(X[i, self.mfeatures])
+            for i in range(X.shape[0]):
+                log_proba[i, :] += self._predict_multinomial_log_proba_upto_const(
+                    X[i, self.mfeatures]
+                )
 
         return log_proba
 
-#==============================================================================
-# Functions
-#==============================================================================
 
-#==============================================================================
+# ==============================================================================
+# Functions
+# ==============================================================================
+
+# ==============================================================================
 # Module initialization
-#==============================================================================
+# ==============================================================================
 
 # init logging system ---------------------------------------------------------
 
-logger = logging.getLogger('fadm')
+logger = logging.getLogger("fadm")
 if not logger.handlers:
     logger.addHandler(logging.NullHandler)
 
-#==============================================================================
+# ==============================================================================
 # Test routine
-#==============================================================================
+# ==============================================================================
+
 
 def _test():
-    """ test function for this module
-    """
+    """test function for this module"""
 
     # perform doctest
     import sys
@@ -668,7 +679,8 @@ def _test():
 
     sys.exit(0)
 
+
 # Check if this is call as command script -------------------------------------
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _test()

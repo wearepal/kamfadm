@@ -37,9 +37,9 @@ Options
     show version
 """
 
-#==============================================================================
+# ==============================================================================
 # Module metadata variables
-#==============================================================================
+# ==============================================================================
 
 __author__ = "Toshihiro Kamishima ( http://www.kamishima.net/ )"
 __date__ = "2012/04/11"
@@ -48,35 +48,36 @@ __copyright__ = "Copyright (c) 2012 Toshihiro Kamishima all rights reserved."
 __license__ = "MIT License: http://www.opensource.org/licenses/mit-license.php"
 __docformat__ = "restructuredtext en"
 
-#==============================================================================
+# ==============================================================================
 # Imports
-#==============================================================================
+# ==============================================================================
 
 import sys
 import argparse
 import itertools
 
-#==============================================================================
+# ==============================================================================
 # Public symbols
-#==============================================================================
+# ==============================================================================
 
 __all__ = []
 
-#==============================================================================
+# ==============================================================================
 # Constants
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Module variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Classes
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Functions
-#==============================================================================
+# ==============================================================================
+
 
 def gen_quad_terms(f, mode):
     """
@@ -100,31 +101,32 @@ def gen_quad_terms(f, mode):
     q = []
 
     # add squared terms
-    if mode == 'squared' or mode == 'both':
+    if mode == "squared" or mode == "both":
         for x in g:
-            q.append(x ** 2)
+            q.append(x**2)
 
     # add squared terms
-    if mode == 'cross' or mode == 'both':
+    if mode == "cross" or mode == "both":
         for x in itertools.combinations(g, 2):
             q.append(x[0] * x[1])
 
-    return [ str(int(x)) if x % 1.0 == 0 else str(x) for x in q ]
+    return [str(int(x)) if x % 1.0 == 0 else str(x) for x in q]
 
-#==============================================================================
+
+# ==============================================================================
 # Main routine
-#==============================================================================
+# ==============================================================================
+
 
 def main(opt):
-    """ Main routine that exits with status code 0
-    """
+    """Main routine that exits with status code 0"""
 
     ### main process
     # read from file
     line_no = 0
     try:
         for line in opt.infile.readlines():
-            line = line.rstrip('\r\n')
+            line = line.rstrip("\r\n")
             line_no += 1
 
             # skip empty line and comment line
@@ -136,12 +138,17 @@ def main(opt):
             l = len(f)
 
             # process
-            q = gen_quad_terms(f[opt.first:l - opt.last], opt.mode)
+            q = gen_quad_terms(f[opt.first : l - opt.last], opt.mode)
 
             # output
-            opt.outfile.write(opt.dl.join(f[:l - opt.last]) + opt.dl +
-                              opt.dl.join(q) + opt.dl +
-                              opt.dl.join(f[l - opt.last:]) + '\n')
+            opt.outfile.write(
+                opt.dl.join(f[: l - opt.last])
+                + opt.dl
+                + opt.dl.join(q)
+                + opt.dl
+                + opt.dl.join(f[l - opt.last :])
+                + "\n"
+            )
 
     except IndexError:
         sys.exit("Parse error in line %d" % line_no)
@@ -159,41 +166,54 @@ def main(opt):
 
     sys.exit(0)
 
+
 ### Check if this is call as command script
-if __name__ == '__main__':
+if __name__ == "__main__":
     ### set script name
-    script_name = sys.argv[0].split('/')[-1]
+    script_name = sys.argv[0].split("/")[-1]
 
     ### command-line option parsing
     ap = argparse.ArgumentParser(
-        description='pydoc is useful for learning the details.')
+        description="pydoc is useful for learning the details."
+    )
 
     # common options
-    ap.add_argument('--version', action='version',
-                    version='%(prog)s ' + __version__)
+    ap.add_argument("--version", action="version", version="%(prog)s " + __version__)
 
     # basic file i/o
-    ap.add_argument('-i', '--in', dest='infile',
-                    default=None, type=argparse.FileType('r'))
-    ap.add_argument('infilep', nargs='?', metavar='INFILE',
-                    default=sys.stdin, type=argparse.FileType('r'))
-    ap.add_argument('-o', '--out', dest='outfile',
-                    default=None, type=argparse.FileType('w'))
-    ap.add_argument('outfilep', nargs='?', metavar='OUTFILE',
-                    default=sys.stdout, type=argparse.FileType('w'))
+    ap.add_argument(
+        "-i", "--in", dest="infile", default=None, type=argparse.FileType("r")
+    )
+    ap.add_argument(
+        "infilep",
+        nargs="?",
+        metavar="INFILE",
+        default=sys.stdin,
+        type=argparse.FileType("r"),
+    )
+    ap.add_argument(
+        "-o", "--out", dest="outfile", default=None, type=argparse.FileType("w")
+    )
+    ap.add_argument(
+        "outfilep",
+        nargs="?",
+        metavar="OUTFILE",
+        default=sys.stdout,
+        type=argparse.FileType("w"),
+    )
 
     # options for a data format
-    ap.add_argument('-d', '--delimiter', dest='dl', default=' ')
-    ap.add_argument('-g', '--ignore', default='#')
+    ap.add_argument("-d", "--delimiter", dest="dl", default=" ")
+    ap.add_argument("-g", "--ignore", default="#")
 
     # script specific options
-    ap.add_argument('-m', '--mode', default='both',
-                    choices=['squared', 'cross', 'both'])
-    ap.add_argument('-f', '--first', type=int, default=0)
-    ap.add_argument('-l', '--last', type=int, default=0)
+    ap.add_argument(
+        "-m", "--mode", default="both", choices=["squared", "cross", "both"]
+    )
+    ap.add_argument("-f", "--first", type=int, default=0)
+    ap.add_argument("-l", "--last", type=int, default=0)
 
-    ap.add_argument('-c', '--choices', type=str,
-                    default='a', choices=['a', 'b', 'c'])
+    ap.add_argument("-c", "--choices", type=str, default="a", choices=["a", "b", "c"])
 
     # parsing
     opt = ap.parse_args()
@@ -202,18 +222,18 @@ if __name__ == '__main__':
     # basic file i/o
     if opt.infile is None:
         opt.infile = opt.infilep
-    del vars(opt)['infilep']
+    del vars(opt)["infilep"]
     if opt.outfile is None:
         opt.outfile = opt.outfilep
-    del vars(opt)['outfilep']
+    del vars(opt)["outfilep"]
 
     # set meta-data of script and machine
     opt.script_name = script_name
     opt.script_version = __version__
 
     # the specified delimiter is TAB?
-    if opt.dl == 't' or opt.dl == 'T':
-        opt.dl = '\t'
+    if opt.dl == "t" or opt.dl == "T":
+        opt.dl = "\t"
 
     ### call main routine
     main(opt)

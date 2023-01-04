@@ -12,47 +12,47 @@ EPSILON : floast
     small positive constant
 """
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals
 
-#==============================================================================
+# ==============================================================================
 # Module metadata variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Imports
-#==============================================================================
+# ==============================================================================
 
 import logging
 import numpy as np
 from scipy.optimize.optimize import fmin_cg
 from sklearn.base import BaseEstimator, ClassifierMixin
 
-#==============================================================================
+# ==============================================================================
 # Public symbols
-#==============================================================================
+# ==============================================================================
 
-__all__ = ['LogisticRegressionWithUnfairnessHaterType1',
-           'LogisticRegressionWithUnfairnessHaterType2']
+__all__ = [
+    "LogisticRegressionWithUnfairnessHaterType1",
+    "LogisticRegressionWithUnfairnessHaterType2",
+]
 
-#==============================================================================
+# ==============================================================================
 # Constants
-#==============================================================================
+# ==============================================================================
 
 EPSILON = 1.0e-10
 SIGMOID_RANGE = np.log((1.0 - EPSILON) / EPSILON)
 
-#==============================================================================
+# ==============================================================================
 # Module variables
-#==============================================================================
+# ==============================================================================
 
-#==============================================================================
+# ==============================================================================
 # Functions
-#==============================================================================
+# ==============================================================================
+
 
 def sigmoid(x, w):
-    """ sigmoid(w^T x)
+    """sigmoid(w^T x)
     To suppress the warnings at np.exp, do "np.seterr(all='ignore')
 
     Parameters
@@ -72,12 +72,14 @@ def sigmoid(x, w):
 
     return 1.0 / (1.0 + np.exp(-s))
 
-#==============================================================================
+
+# ==============================================================================
 # Classes
-#==============================================================================
+# ==============================================================================
+
 
 class LikelihoodType1Mixin(object):
-    """ mixin for singe type 1 likelihood
+    """mixin for singe type 1 likelihood
 
     Parameters
     ----------
@@ -109,24 +111,22 @@ class LikelihoodType1Mixin(object):
             X = np.c_[np.ones(X.shape[0]), X]
 
         # check optimization parameters
-        if not 'disp' in params:
-            params['disp'] = False
-        if not 'maxiter' in params:
-            params['maxiter'] = 100
+        if not "disp" in params:
+            params["disp"] = False
+        if not "maxiter" in params:
+            params["maxiter"] = 100
 
         self.coef_ = np.zeros(X.shape[1])
-        self.coef_ = fmin_cg(self.loss,
-                             self.coef_,
-                             fprime=self.grad_loss,
-                             args=(X, y, ns),
-                             **params)
+        self.coef_ = fmin_cg(
+            self.loss, self.coef_, fprime=self.grad_loss, args=(X, y, ns), **params
+        )
 
         # clear the weights for sensitive features
         if ignore_sensitive:
             self.coef_[-ns:] = 0.0
 
     def predict_proba(self, X):
-        """ predict probabilities
+        """predict probabilities
 
         Parameters
         ----------
@@ -145,14 +145,14 @@ class LikelihoodType1Mixin(object):
             X = np.c_[np.ones(X.shape[0]), X]
 
         prob = np.empty((X.shape[0], 2))
-        prob[:, 1] = [sigmoid(X[i, :], self.coef_)
-                      for i in xrange(X.shape[0])]
+        prob[:, 1] = [sigmoid(X[i, :], self.coef_) for i in range(X.shape[0])]
         prob[:, 0] = 1.0 - prob[:, 1]
 
         return prob
 
+
 class LogisticRegressionWithUnfairnessHater(BaseEstimator, ClassifierMixin):
-    """ Two class LogisticRegression with Unfairness Hater
+    """Two class LogisticRegression with Unfairness Hater
 
     Parameters
     ----------
@@ -175,12 +175,12 @@ class LogisticRegressionWithUnfairnessHater(BaseEstimator, ClassifierMixin):
         probabilities of the positive class given sensitive features
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty='l2'):
+    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
         if C < 0.0:
             raise TypeError
         self.fit_intercept = fit_intercept
-        self.penalty = 'l2'
+        self.penalty = "l2"
         self.C = C
         self.coef_ = None
 
@@ -188,7 +188,7 @@ class LogisticRegressionWithUnfairnessHater(BaseEstimator, ClassifierMixin):
         self.lossfunc_type = 0
 
     def predict(self, X):
-        """ predict classes
+        """predict classes
 
         Parameters
         ----------
@@ -203,16 +203,17 @@ class LogisticRegressionWithUnfairnessHater(BaseEstimator, ClassifierMixin):
 
         return np.argmax(self.predict_proba(X), 1)
 
-class LogisticRegressionWithUnfairnessHaterType1\
-    (LogisticRegressionWithUnfairnessHater,
-     LikelihoodType1Mixin):
-    """ Two class LogisticRegression with Unfairness Hater
+
+class LogisticRegressionWithUnfairnessHaterType1(
+    LogisticRegressionWithUnfairnessHater, LikelihoodType1Mixin
+):
+    """Two class LogisticRegression with Unfairness Hater
 
     Loss function type 1: sensitive feature is included in the model of
     Pr[y | x, s]
-    
+
     ::
-    
+
         Likelihood = sum{(y,x,s)\in D} Pr[y | x,s; [w,v]]
 
     Parameters
@@ -227,15 +228,15 @@ class LogisticRegressionWithUnfairnessHaterType1\
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty='l2'):
+    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LogisticRegressionWithUnfairnessHaterType1, self).\
-            __init__(C=C, eta=eta,
-                     fit_intercept=fit_intercept, penalty=penalty)
+        super(LogisticRegressionWithUnfairnessHaterType1, self).__init__(
+            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
+        )
         lossfunc_type = 1
 
     def loss(self, coef, X, y, ns):
-        """ loss function: negative log-likelihood with l2 regularizer
+        """loss function: negative log-likelihood with l2 regularizer
         To suppress the warnings at np.log, do "np.seterr(all='ignore')
 
         Parameters
@@ -255,13 +256,12 @@ class LogisticRegressionWithUnfairnessHaterType1\
             loss function value
         """
 
-#        print >> sys.stderr, "loss:", coef,
+        #        print >> sys.stderr, "loss:", coef,
 
-        #likelihood
+        # likelihood
         # sigma := sigmoid([w,v]^T, [x,s])
         # \sum_{x,s,y in D} y log(sigma) + (1 - y) log(1 - sigma)
-        p = np.array([sigmoid(X[i, :], coef)
-                      for i in xrange(X.shape[0])])
+        p = np.array([sigmoid(X[i, :], coef) for i in range(X.shape[0])])
         l = np.sum(y * np.log(p) + (1.0 - y) * np.log(1.0 - p))
 
         # penalty term
@@ -275,11 +275,11 @@ class LogisticRegressionWithUnfairnessHaterType1\
         # l2 regularizer
         reg = np.dot(coef, coef)
 
-#        print >> sys.stderr, - l + self.eta * f + 0.5 * self.C * reg
+        #        print >> sys.stderr, - l + self.eta * f + 0.5 * self.C * reg
         return -l + self.eta * f + 0.5 * self.C * reg
 
     def grad_loss(self, coef, X, y, ns):
-        """ first derivative of loss function
+        """first derivative of loss function
 
         Parameters
         ----------
@@ -298,13 +298,12 @@ class LogisticRegressionWithUnfairnessHaterType1\
             first derivative of loss function
         """
 
-#        print >> sys.stderr, "diff:", coef,
+        #        print >> sys.stderr, "diff:", coef,
 
-        #likelihood
+        # likelihood
         # sigma := sigmoid([w,v]^T, [x,s])
         # \sum_{x,s,y in D} (y - sigma) x
-        p = np.array([sigmoid(X[i, :], coef)
-                      for i in xrange(X.shape[0])])
+        p = np.array([sigmoid(X[i, :], coef) for i in range(X.shape[0])])
         l = np.sum((y - p)[:, np.newaxis] * X, axis=0)
 
         # fairness penalty term
@@ -317,20 +316,21 @@ class LogisticRegressionWithUnfairnessHaterType1\
         # l2 regularizer
         reg = coef
 
-#        print >> sys.stderr, -l + self.eta * f + self.C * coef
+        #        print >> sys.stderr, -l + self.eta * f + self.C * coef
 
         return -l + self.eta * f + self.C * reg
 
-class LogisticRegressionWithUnfairnessHaterType2\
-    (LogisticRegressionWithUnfairnessHater,
-     LikelihoodType1Mixin):
-    """ Two class LogisticRegression with Unfairness Hater
+
+class LogisticRegressionWithUnfairnessHaterType2(
+    LogisticRegressionWithUnfairnessHater, LikelihoodType1Mixin
+):
+    """Two class LogisticRegression with Unfairness Hater
 
     Loss function type 2: sensitive feature is excluded in the model of
     Pr[y | x, s].
-    
+
     ::
-    
+
         Likelihood = sum{(y,x\in D} Pr[y | x; w]
 
     Parameters
@@ -345,15 +345,15 @@ class LogisticRegressionWithUnfairnessHaterType2\
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty='l2'):
+    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
 
-        super(LogisticRegressionWithUnfairnessHaterType2, self).\
-            __init__(C=C, eta=eta,
-                     fit_intercept=fit_intercept, penalty=penalty)
+        super(LogisticRegressionWithUnfairnessHaterType2, self).__init__(
+            C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty
+        )
         lossfunc_type = 2
 
     def loss(self, coef, X, y, ns):
-        """ loss function: negative log-likelihood with l2 regularizer
+        """loss function: negative log-likelihood with l2 regularizer
         To suppress the warnings at np.log, do "np.seterr(all='ignore')
 
         Parameters
@@ -373,13 +373,12 @@ class LogisticRegressionWithUnfairnessHaterType2\
             loss function value
         """
 
-#        print >> sys.stderr, "loss:", coef,
+        #        print >> sys.stderr, "loss:", coef,
 
-        #likelihood
+        # likelihood
         # sigma := sigmoid([w,v]^T, [x,s])
         # \sum_{x,s,y in D} y log(sigma) + (1 - y) log(1 - sigma)
-        p = np.array([sigmoid(X[i, :-ns], coef[:-ns])
-                      for i in xrange(X.shape[0])])
+        p = np.array([sigmoid(X[i, :-ns], coef[:-ns]) for i in range(X.shape[0])])
         l = np.sum(y * np.log(p) + (1.0 - y) * np.log(1.0 - p))
 
         # penalty term
@@ -393,11 +392,11 @@ class LogisticRegressionWithUnfairnessHaterType2\
         # l2 regularizer
         reg = np.dot(coef, coef)
 
-#        print >> sys.stderr, - l + self.eta * f + 0.5 * self.C * reg
+        #        print >> sys.stderr, - l + self.eta * f + 0.5 * self.C * reg
         return -l + self.eta * f + 0.5 * self.C * reg
 
     def grad_loss(self, coef, X, y, ns):
-        """ first derivative of loss function
+        """first derivative of loss function
 
         Parameters
         ----------
@@ -416,13 +415,12 @@ class LogisticRegressionWithUnfairnessHaterType2\
             first derivative of loss function
         """
 
-#        print >> sys.stderr, "diff:", coef,
+        #        print >> sys.stderr, "diff:", coef,
 
-        #likelihood
+        # likelihood
         # sigma := sigmoid([w,v]^T, [x,s])
         # \sum_{x,s,y in D} (y - sigma) x
-        p = np.array([sigmoid(X[i, :-ns], coef[:-ns])
-                      for i in xrange(X.shape[0])])
+        p = np.array([sigmoid(X[i, :-ns], coef[:-ns]) for i in range(X.shape[0])])
         l = np.sum((y - p)[:, np.newaxis] * X[:, :-ns], axis=0)
         l = np.r_[l, np.zeros(ns)]
 
@@ -436,27 +434,28 @@ class LogisticRegressionWithUnfairnessHaterType2\
         # l2 regularizer
         reg = coef
 
-#        print >> sys.stderr, -l + self.eta * f + self.C * coef
+        #        print >> sys.stderr, -l + self.eta * f + self.C * coef
 
         return -l + self.eta * f + self.C * reg
 
-#==============================================================================
+
+# ==============================================================================
 # Module initialization
-#==============================================================================
+# ==============================================================================
 
 # init logging system
 
-logger = logging.getLogger('fadm')
+logger = logging.getLogger("fadm")
 if not logger.handlers:
     logger.addHandler(logging.NullHandler)
 
-#==============================================================================
+# ==============================================================================
 # Test routine
-#==============================================================================
+# ==============================================================================
+
 
 def _test():
-    """ test function for this module
-    """
+    """test function for this module"""
 
     # perform doctest
     import sys
@@ -466,7 +465,8 @@ def _test():
 
     sys.exit(0)
 
+
 # Check if this is call as command script
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _test()

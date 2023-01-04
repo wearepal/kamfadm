@@ -70,9 +70,9 @@ Options
     vol.21 (2010)
 """
 
-#==============================================================================
+# ==============================================================================
 # Module metadata variables
-#==============================================================================
+# ==============================================================================
 
 __author__ = "Toshihiro Kamishima ( http://www.kamishima.net/ )"
 __date__ = "2011/02/07"
@@ -81,42 +81,43 @@ __copyright__ = "Copyright (c) 2011 Toshihiro Kamishima all rights reserved."
 __license__ = "MIT License http://www.opensource.org/licenses/mit-license.php"
 __docformat__ = "restructuredtext en"
 
-#==============================================================================
+# ==============================================================================
 # Imports
-#==============================================================================
+# ==============================================================================
 
 import sys
 import os
 import optparse
 import numpy as np
 
-#==============================================================================
+# ==============================================================================
 # Public symbols
-#==============================================================================
+# ==============================================================================
 
 __all__ = []
 
-#==============================================================================
-#{ Constants
-#==============================================================================
+# ==============================================================================
+# { Constants
+# ==============================================================================
 
 PC_BASE = np.array([[0.1, 0.2], [0.8, 0.9]])
 PL_BASE = 0.5
 PS_BASE = 0.5
 
-#==============================================================================
-#{ Module variables
-#==============================================================================
+# ==============================================================================
+# { Module variables
+# ==============================================================================
 
 script_name = os.path.basename(sys.argv[0])
 info = {}
 
-#==============================================================================
-#{ Classes
-#==============================================================================
+# ==============================================================================
+# { Classes
+# ==============================================================================
+
 
 class AData(object):
-    """ Artificial Data Generator for Fairness-aware Learning
+    """Artificial Data Generator for Fairness-aware Learning
 
     :IVariables:
         `f` : int
@@ -146,8 +147,8 @@ class AData(object):
     """
 
     def __init__(self, f, lb, sb):
-        """ Constructor
-        
+        """Constructor
+
         :Parameters:
             `f` : int
                 the number of features
@@ -165,7 +166,7 @@ class AData(object):
         self.pl = PL_BASE
         self.ps = PS_BASE
         self.pa = []
-        for i in xrange(self.f):
+        for i in range(self.f):
             pa = np.empty((2, 2))
             pa[1, 1] = np.random.random()
             pa[1, 0] = np.random.random()
@@ -175,10 +176,12 @@ class AData(object):
             while np.abs(pa[1, 1] - pa[0, 1]) > self.lb:
                 pa[0, 1] = np.random.random()
             pa[0, 0] = np.random.random()
-            while (np.abs(pa[1, 0] - pa[0, 0]) > self.lb) \
-                or (np.abs(pa[0, 1] - pa[0, 0]) > self.sb) \
-                or ((pa[1, 0] - pa[1, 1]) * (pa[0, 0] - pa[0, 1]) < 0) \
-                or ((pa[0, 1] - pa[1, 1]) * (pa[0, 0] - pa[1, 0]) < 0):
+            while (
+                (np.abs(pa[1, 0] - pa[0, 0]) > self.lb)
+                or (np.abs(pa[0, 1] - pa[0, 0]) > self.sb)
+                or ((pa[1, 0] - pa[1, 1]) * (pa[0, 0] - pa[0, 1]) < 0)
+                or ((pa[0, 1] - pa[1, 1]) * (pa[0, 0] - pa[1, 0]) < 0)
+            ):
                 pa[0, 0] = np.random.random()
             self.pa.append(pa)
 
@@ -189,8 +192,8 @@ class AData(object):
         self.c = None
 
     def generate(self, n):
-        """  generate L and S
-        
+        """generate L and S
+
         :Parameters:
             `n` : int
                 the number of samples
@@ -203,12 +206,12 @@ class AData(object):
         self.c = np.random.binomial(1, self.pc[self.l, self.s])
 
         self.a = np.empty((self.n, self.f))
-        for i in xrange(self.f):
+        for i in range(self.f):
             self.a[:, i] = np.random.binomial(1, self.pa[i][self.l, self.s])
 
     def write_arff(self, f):
-        """ write data in ARFF format
-        
+        """write data in ARFF format
+
         :Parameters:
             `f` : file object
                 file hundle to write
@@ -217,9 +220,11 @@ class AData(object):
         f.write("% pl=" + str(self.pl) + "\n")
         f.write("% ps=" + str(self.ps) + "\n")
         f.write("%% pc=[%s, %s]\n" % (str(self.pc[0, :]), str(self.pc[1, :])))
-        for i in xrange(self.f):
-            f.write("%% pa[%d]=[%s, %s]\n" % \
-                    (i, str(self.pa[i][0, :]), str(self.pa[i][1, :])))
+        for i in range(self.f):
+            f.write(
+                "%% pa[%d]=[%s, %s]\n"
+                % (i, str(self.pa[i][0, :]), str(self.pa[i][1, :]))
+            )
         f.write("% nos_sample=" + str(self.n) + "\n")
         f.write("% nos_feature=" + str(self.f) + "\n")
         f.write("% l_bound=" + str(self.lb) + "\n")
@@ -227,7 +232,7 @@ class AData(object):
 
         # write header
         f.write("\n@relation fldata\n\n")
-        for i in xrange(self.f):
+        for i in range(self.f):
             f.write("@attribute a%02d { 0, 1 }\n" % (i + 1))
         f.write("@attribute s   { 0, 1 }\n")
         f.write("@attribute l   { 0, 1 }\n")
@@ -235,22 +240,22 @@ class AData(object):
         f.write("\n@data\n")
 
         # write body
-        for i in xrange(self.n):
-            for j in xrange(self.f):
+        for i in range(self.n):
+            for j in range(self.f):
                 f.write(str(int(self.a[i, j])) + ", ")
             f.write("%d, %d, %d\n" % (self.s[i], self.l[i], self.c[i]))
 
     def write_txt(self, f):
-        """ write data in space-sparated text
-        
+        """write data in space-sparated text
+
         :Parameters:
             `f` : file object
                 file hundle to write
         """
 
         # write body
-        for i in xrange(self.n):
-            for j in xrange(self.f):
+        for i in range(self.n):
+            for j in range(self.f):
                 f.write(str(int(self.a[i, j])) + " ")
             f.write("%d %d %d\n" % (self.s[i], self.l[i], self.c[i]))
 
@@ -258,52 +263,54 @@ class AData(object):
         f.write("# pl=" + str(self.pl) + "\n")
         f.write("# ps=" + str(self.ps) + "\n")
         f.write("# pc=[%s, %s]\n" % (str(self.pc[0, :]), str(self.pc[1, :])))
-        for i in xrange(self.f):
-            f.write("# pa[%d]=[%s, %s]\n" % \
-                    (i, str(self.pa[i][0, :]), str(self.pa[i][1, :])))
+        for i in range(self.f):
+            f.write(
+                "# pa[%d]=[%s, %s]\n"
+                % (i, str(self.pa[i][0, :]), str(self.pa[i][1, :]))
+            )
         f.write("# nos_sample=" + str(self.n) + "\n")
         f.write("# nos_feature=" + str(self.f) + "\n")
         f.write("# l_bound=" + str(self.lb) + "\n")
         f.write("# s_bound=" + str(self.sb) + "\n")
 
-#==============================================================================
-#{ Functions 
-#==============================================================================
 
-#==============================================================================
-#{ Main routine
-#==============================================================================
+# ==============================================================================
+# { Functions
+# ==============================================================================
+
+# ==============================================================================
+# { Main routine
+# ==============================================================================
 def main(opt, arg):
-    """ Main routine that exits with status code 0
-    """
+    """Main routine that exits with status code 0"""
 
     global info
 
     # set metadata of script and machine
-    info['script'] = script_name
-    info['script_version'] = __version__
-    info['random_seed'] = opt.rseed
-    info['verbose_mode'] = opt.verbose
+    info["script"] = script_name
+    info["script_version"] = __version__
+    info["random_seed"] = opt.rseed
+    info["verbose_mode"] = opt.verbose
 
-# Open Files ------------------------------------------------------------------
+    # Open Files ------------------------------------------------------------------
     # open output file
     if opt.output == None:
         if len(arg) > 0:
-            info['output_file'] = arg[0]
+            info["output_file"] = arg[0]
             outfile = open(arg.pop(0), "w")
         else:
-            info['output_file'] = "<stdout>"
+            info["output_file"] = "<stdout>"
             outfile = sys.stdout
     else:
-        info['output_file'] = str(opt.output)
+        info["output_file"] = str(opt.output)
         outfile = open(opt.output, "w")
 
-# Process data ----------------------------------------------------------------
+    # Process data ----------------------------------------------------------------
 
     d = AData(opt.feature, opt.lbound, opt.sbound)
     d.generate(opt.sample)
 
-# Output ----------------------------------------------------------------------
+    # Output ----------------------------------------------------------------------
     if opt.arff:
         for key in info.keys():
             outfile.write("%% %s=%s\n" % (key, str(info[key])))
@@ -313,26 +320,29 @@ def main(opt, arg):
         for key in info.keys():
             outfile.write("# %s=%s\n" % (key, str(info[key])))
 
-# End Process -----------------------------------------------------------------
+    # End Process -----------------------------------------------------------------
     if outfile != sys.stdout:
         outfile.close()
 
     sys.exit(0)
 
-#==============================================================================
+
+# ==============================================================================
 # Check if this is call as command script
-#==============================================================================
-if __name__ == '__main__':
+# ==============================================================================
+if __name__ == "__main__":
 
     # command-lien option parsing
-    parser = optparse.OptionParser(usage="Usage: %prog [options] args...",
-                                   description="use pydoc or epydoc.",
-                                   version="%prog " + __version__)
+    parser = optparse.OptionParser(
+        usage="Usage: %prog [options] args...",
+        description="use pydoc or epydoc.",
+        version="%prog " + __version__,
+    )
     parser.add_option("--verbose", action="store_true", dest="verbose")
     parser.add_option("-q", "--quiet", action="store_false", dest="verbose")
     parser.set_defaults(verbose=True)
 
-# additional command line args ------------------------------------------------
+    # additional command line args ------------------------------------------------
 
     parser.add_option("-o", "--out", dest="output")
     parser.add_option("--rseed", dest="rseed", type="int")
@@ -347,7 +357,7 @@ if __name__ == '__main__':
     parser.add_option("--arff", dest="arff", action="store_true")
     parser.set_defaults(arff=False)
 
-#  ----------------------------------------------------------------------------
+    #  ----------------------------------------------------------------------------
 
     (opt, arg) = parser.parse_args()
 
