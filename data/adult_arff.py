@@ -111,7 +111,7 @@ def main(opt, arg):
     """Main routine that exits with status code 0"""
 
     # open input file
-    if opt.input == None:
+    if opt.input is None:
         if len(arg) > 0:
             infile = open(arg.pop(0))
         else:
@@ -120,7 +120,7 @@ def main(opt, arg):
         infile = open(opt.input)
 
     # open output file
-    if opt.output == None:
+    if opt.output is None:
         if len(arg) > 0:
             outfile = open(arg.pop(0), "w")
         else:

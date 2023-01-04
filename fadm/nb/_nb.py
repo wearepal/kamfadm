@@ -316,7 +316,8 @@ class GaussianNaiveBayes(BaseNaiveBayes):
             log probability of the given feature value
         """
 
-        log_normal_pdf = lambda x, m, v: -np.log(v) / 2.0 - (x - m) ** 2 / (2.0 * v)
+        def log_normal_pdf(x, m, v):
+            return -np.log(v) / 2.0 - (x - m) ** 2 / (2.0 * v)
 
         f = np.logical_and(self.f_valid_, np.isfinite(x))
         log_proba = np.sum(
@@ -503,9 +504,11 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
         if len(f) == 0:
             return np.zeros(self.n_classes)
 
-        p = lambda i: np.log(self.pf_[i][:, int(x[i])]) - np.log(
-            np.sum(self.pf_[i], axis=1)
-        )
+        def p(i):
+            return np.log(self.pf_[i][:, int(x[i])]) - np.log(
+                np.sum(self.pf_[i], axis=1)
+            )
+
         log_proba = np.sum([p(i) for i in f], axis=0)
 
         return log_proba

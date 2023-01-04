@@ -315,9 +315,9 @@ class LRwPRFittingType1Mixin(LRwPR):
             X = np.atleast_2d(X)[:, :-ns]
 
         # check optimization parameters
-        if not "disp" in kwargs:
+        if "disp" not in kwargs:
             kwargs["disp"] = False
-        if not "maxiter" in kwargs:
+        if "maxiter" not in kwargs:
             kwargs["maxiter"] = 100
 
         # set instance variables

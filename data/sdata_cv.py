@@ -293,7 +293,7 @@ def main(opt, arg):
 
     # Open Files ------------------------------------------------------------------
     # open output file
-    if opt.output == None:
+    if opt.output is None:
         if len(arg) > 0:
             info["output_file"] = arg[0]
             outfile = open(arg.pop(0), "w")

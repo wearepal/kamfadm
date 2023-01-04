@@ -110,9 +110,9 @@ class LikelihoodType1Mixin:
             X = np.c_[np.ones(X.shape[0]), X]
 
         # check optimization parameters
-        if not "disp" in params:
+        if "disp" not in params:
             params["disp"] = False
-        if not "maxiter" in params:
+        if "maxiter" not in params:
             params["maxiter"] = 100
 
         self.coef_ = np.zeros(X.shape[1])

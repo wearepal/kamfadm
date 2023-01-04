@@ -133,7 +133,7 @@ class CaldersVerwerTwoNaiveBayes(
         #        print >> sys.stderr, "numpos, disc =", numpos, disc
         #        print >> sys.stderr, "pys_ =", self.pys_[0, :], self.pys_[1, :]
         pos_flag = True
-        while disc > 0.0 and pos_flag == True:
+        while disc > 0.0 and pos_flag:
             if numpos < d_numpos:
                 self.pys_[1, 0] += delta * self.pys_[0, 1]
                 self.pys_[0, 0] -= delta * self.pys_[0, 1]

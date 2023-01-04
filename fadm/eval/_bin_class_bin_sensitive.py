@@ -159,14 +159,14 @@ class BinClassBinSensitiveStats(BinClassStats):
             KL divergence from estimated distribution to correct distribution
         """
 
-        i = lambda n, m: 0.0 if n == 0.0 else np.inf if m == 0.0 else n * np.log(n / m)
+        def i(n, m):
+            return 0.0 if n == 0.0 else np.inf if m == 0.0 else n * np.log(n / m)
 
         kldivc = (i(self.c[0], self.e[0]) + i(self.c[1], self.e[1])) / self.t
         kldive = (i(self.e[0], self.c[0]) + i(self.e[1], self.c[1])) / self.t
 
-        i2 = (
-            lambda n, m: 0.0 if n == 0.0 else np.inf if m == 0.0 else n * np.log2(n / m)
-        )
+        def i2(n, m):
+            return 0.0 if n == 0.0 else np.inf if m == 0.0 else n * np.log2(n / m)
 
         kldivc2 = (i2(self.c[0], self.e[0]) + i2(self.c[1], self.e[1])) / self.t
         kldive2 = (i2(self.e[0], self.c[0]) + i2(self.e[1], self.c[1])) / self.t
@@ -224,12 +224,13 @@ class BinClassBinSensitiveStats(BinClassStats):
         """
 
         # joint entropy of the pmf function n / sum(n)
-        en = lambda n: np.sum(
-            [
-                0.0 if i == 0.0 else (-i / self.t) * np.log(i / self.t)
-                for i in np.ravel(n)
-            ]
-        )
+        def en(n):
+            return np.sum(
+                [
+                    0.0 if i == 0.0 else -i / self.t * np.log(i / self.t)
+                    for i in np.ravel(n)
+                ]
+            )
 
         j = np.sum(self.m, axis=2)
         hj = en(j)
@@ -289,12 +290,13 @@ class BinClassBinSensitiveStats(BinClassStats):
         """
 
         # joint entropy of the pmf function n / sum(n)
-        en = lambda n: np.sum(
-            [
-                0.0 if i == 0.0 else (-i / self.t) * np.log(i / self.t)
-                for i in np.ravel(n)
-            ]
-        )
+        def en(n):
+            return np.sum(
+                [
+                    0.0 if i == 0.0 else -i / self.t * np.log(i / self.t)
+                    for i in np.ravel(n)
+                ]
+            )
 
         j = np.sum(self.m, axis=1)
         hj = en(j)

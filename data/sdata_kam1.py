@@ -25,7 +25,10 @@ bias = 1 * pS + (-1) * (1 - pS)
 EPSILON = 1.0e-10
 SIGMOID_RANGE = np.log((1.0 - EPSILON) / EPSILON)
 
-sigmoid = lambda x: 1.0 / (1.0 + np.exp(-np.clip(x, -SIGMOID_RANGE, SIGMOID_RANGE)))
+
+def sigmoid(x):
+    return 1.0 / (1.0 + np.exp(-np.clip(x, -SIGMOID_RANGE, SIGMOID_RANGE)))
+
 
 # data generation
 for i in range(n):
