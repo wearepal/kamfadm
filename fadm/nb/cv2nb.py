@@ -17,7 +17,9 @@ Calders and Verwer's two naive Bayes method
 # ==============================================================================
 
 import logging
+from typing import Tuple
 import numpy as np
+from numpy import typing as npt
 from sklearn.base import BaseEstimator, ClassifierMixin
 
 # private modules -------------------------------------------------------------
@@ -84,7 +86,9 @@ class CaldersVerwerTwoNaiveBayes(
     N_CLASSES = 2
     N_S_VALUES = 2
 
-    def __init__(self, n_features, nfv, alpha=1.0, beta=1.0):
+    def __init__(
+        self, n_features: int, nfv, alpha: float = 1.0, beta: float = 1.0
+    ) -> None:
 
         self.n_features = n_features
         self.alpha = alpha
@@ -99,7 +103,13 @@ class CaldersVerwerTwoNaiveBayes(
                 self.N_CLASSES, self.n_features, self.nfv, self.alpha, self.beta
             )
 
-    def fit(self, X, y, ns=1, delta=0.01):
+    def fit(
+        self,
+        X: npt.NDArray[np.float32],
+        y: npt.NDArray[np.float32],
+        ns: int = 1,
+        delta: float = 0.01,
+    ) -> None:
         """train this model
 
         Parameters
@@ -115,9 +125,9 @@ class CaldersVerwerTwoNaiveBayes(
         """
 
         X = np.array(X)
-        s = X[:, -ns].astype(np.int)
+        s = X[:, -ns].astype(int)
         XX = X[:, :-ns]
-        y = np.array(y).astype(np.int)
+        y = np.array(y).astype(int)
         self.ns = ns
         self.n_samples = X.shape[0]
 
@@ -153,7 +163,9 @@ class CaldersVerwerTwoNaiveBayes(
     #            print >> sys.stderr, "numpos, disc =", numpos, disc
     #            print >> sys.stderr, "pys_ =", self.pys_[0, :], self.pys_[1, :]
 
-    def _get_stats(self, X, y):
+    def _get_stats(
+        self, X: npt.NDArray[np.float32], y: npt.NDArray[np.float32]
+    ) -> Tuple[np.float32, int]:
         """get statistics
 
         Parameters
@@ -173,7 +185,7 @@ class CaldersVerwerTwoNaiveBayes(
 
         return numpos, disc
 
-    def _predict_log_proba_upto_const(self, X):
+    def _predict_log_proba_upto_const(self, X: npt.NDArray):
         """log probabilities up to constant term
 
         Parameters
@@ -219,7 +231,7 @@ if not logger.handlers:
 # ==============================================================================
 
 
-def _test():
+def _test() -> None:
     """test function for this module"""
 
     # perform doctest

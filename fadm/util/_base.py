@@ -57,7 +57,7 @@ def add_constant_feature(D):
     return np.c_[np.ones(D.shape[0]), D]
 
 
-def fill_missing_with_mean(D, default=0.0):
+def fill_missing_with_mean(D, default: float = 0.0):
     """fill missing value with the means of non-missing values in the column
 
     Parameters
@@ -134,7 +134,7 @@ if not logger.handlers:
 # ==============================================================================
 
 
-def _test():
+def _test() -> None:
     """test function for this module"""
 
     # perform doctest

@@ -67,7 +67,7 @@ class BinClassBinSensitiveStats(BinClassStats):
         parameters are out of ranges
     """
 
-    def __init__(self, m):
+    def __init__(self, m) -> None:
         if np.any(m < 0.0) or np.any(np.isinf(m)) or np.any(np.isnan(m)):
             raise ValueError("Illegal values are specified")
 
@@ -76,7 +76,7 @@ class BinClassBinSensitiveStats(BinClassStats):
 
         super().__init__(self.s[1, 1], self.s[1, 0], self.s[0, 1], self.s[0, 0])
 
-    def negate(self):
+    def negate(self) -> None:
         """Negate the meanings of positive and negative classes."""
 
         super().negate()
@@ -106,7 +106,7 @@ class BinClassBinSensitiveStats(BinClassStats):
             self.m[1, 0, 0],
         )
 
-    def str_sct(self, header=True):
+    def str_sct(self, header: bool = True):
         """Strings for sct()
 
         Parameters
@@ -173,7 +173,7 @@ class BinClassBinSensitiveStats(BinClassStats):
 
         return kldivc, kldive, kldivc2, kldive2
 
-    def str_kldiv(self, header=True):
+    def str_kldiv(self, header: bool = True):
         """Strings for kldiv()
 
         Parameters
@@ -243,7 +243,7 @@ class BinClassBinSensitiveStats(BinClassStats):
 
         return mi, nmic, nmis, (nmic + nmis) / 2.0, np.sqrt(nmic * nmis)
 
-    def str_mics(self, header=True):
+    def str_mics(self, header: bool = True):
         """Strings for mics()
 
         Parameters
@@ -309,7 +309,7 @@ class BinClassBinSensitiveStats(BinClassStats):
 
         return mi, nmie, nmis, (nmie + nmis) / 2.0, np.sqrt(nmie * nmis)
 
-    def str_mies(self, header=True):
+    def str_mies(self, header: bool = True):
         """Strings for mies()
 
         Parameters
@@ -372,7 +372,7 @@ class BinClassBinSensitiveStats(BinClassStats):
 
         return kldivc / self.t, kldive / self.t
 
-    def str_klgivens(self, header=True):
+    def str_klgivens(self, header: bool = True):
         """Strings for klgivens()
 
         Parameters
@@ -423,7 +423,7 @@ class BinClassBinSensitiveStats(BinClassStats):
 
         return np.sqrt(2.0 * hd), np.sqrt(hd)
 
-    def str_hdjoints(self, header=True):
+    def str_hdjoints(self, header: bool = True):
         """Strings for hdjoints()
 
         Parameters
@@ -466,7 +466,7 @@ class BinClassBinSensitiveStats(BinClassStats):
 
         return cvsc, cvse
 
-    def str_cvs(self, header=True):
+    def str_cvs(self, header: bool = True):
         """Strings for cvs()
 
         Parameters
@@ -510,7 +510,7 @@ class BinClassBinSensitiveStats(BinClassStats):
 
         return tuple(stats)
 
-    def str_all(self, header=True):
+    def str_all(self, header: bool = True):
         """Strings for all()
 
         Parameters
@@ -561,7 +561,7 @@ if not logger.handlers:
 # ==============================================================================
 
 
-def _test():
+def _test() -> None:
     """test function for this module"""
 
     # perform doctest

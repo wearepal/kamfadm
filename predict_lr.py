@@ -100,7 +100,7 @@ N_NS = 1
 # ==============================================================================
 
 
-def main(opt):
+def main(opt) -> None:
     """Main routine that exits with status code 0"""
 
     ### pre process

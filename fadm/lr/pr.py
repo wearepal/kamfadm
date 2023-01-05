@@ -126,7 +126,13 @@ class LRwPR(BaseEstimator, ClassifierMixin):
         the value of loss function after training
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
+    def __init__(
+        self,
+        C: float = 1.0,
+        eta: float = 1.0,
+        fit_intercept: bool = True,
+        penalty: str = "l2",
+    ) -> None:
 
         if C < 0.0:
             raise TypeError
@@ -290,7 +296,7 @@ class LRwPRFittingType1Mixin(LRwPR):
         else:
             raise typeError
 
-    def fit(self, X, y, ns=N_S, itype=0, **kwargs):
+    def fit(self, X, y, ns=N_S, itype: int = 0, **kwargs) -> None:
         """train this model
 
         Parameters
@@ -900,7 +906,13 @@ class LRwPRType4(
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
+    def __init__(
+        self,
+        C: float = 1.0,
+        eta: float = 1.0,
+        fit_intercept: bool = True,
+        penalty: str = "l2",
+    ) -> None:
 
         super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
@@ -928,7 +940,13 @@ class LRwPRType5(
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
+    def __init__(
+        self,
+        C: float = 1.0,
+        eta: float = 1.0,
+        fit_intercept: bool = True,
+        penalty: str = "l2",
+    ) -> None:
 
         super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
@@ -956,7 +974,13 @@ class LRwPRType6(
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
+    def __init__(
+        self,
+        C: float = 1.0,
+        eta: float = 1.0,
+        fit_intercept: bool = True,
+        penalty: str = "l2",
+    ) -> None:
 
         super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
@@ -984,7 +1008,13 @@ class LRwPRType7(
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
+    def __init__(
+        self,
+        C: float = 1.0,
+        eta: float = 1.0,
+        fit_intercept: bool = True,
+        penalty: str = "l2",
+    ) -> None:
 
         super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
@@ -1012,7 +1042,13 @@ class LRwPRType8(
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
+    def __init__(
+        self,
+        C: float = 1.0,
+        eta: float = 1.0,
+        fit_intercept: bool = True,
+        penalty: str = "l2",
+    ) -> None:
 
         super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
@@ -1040,7 +1076,13 @@ class LRwPRType9(
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
+    def __init__(
+        self,
+        C: float = 1.0,
+        eta: float = 1.0,
+        fit_intercept: bool = True,
+        penalty: str = "l2",
+    ) -> None:
 
         super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
@@ -1068,7 +1110,13 @@ class LRwPRType10(
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
+    def __init__(
+        self,
+        C: float = 1.0,
+        eta: float = 1.0,
+        fit_intercept: bool = True,
+        penalty: str = "l2",
+    ) -> None:
 
         super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
@@ -1096,7 +1144,13 @@ class LRwPRType11(
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
+    def __init__(
+        self,
+        C: float = 1.0,
+        eta: float = 1.0,
+        fit_intercept: bool = True,
+        penalty: str = "l2",
+    ) -> None:
 
         super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
 
@@ -1122,7 +1176,7 @@ if not logger.handlers:
 # ==============================================================================
 
 
-def _test():
+def _test() -> None:
     """test function for this module"""
 
     # perform doctest

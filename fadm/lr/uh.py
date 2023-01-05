@@ -96,7 +96,7 @@ class LikelihoodType1Mixin:
         arguments to optmizer
     """
 
-    def fit(self, X, y, ns, ufc, ignore_sensitive=False, **params):
+    def fit(self, X, y, ns, ufc, ignore_sensitive: bool = False, **params) -> None:
 
         # fix ns to 1 in current version
         ns = 1
@@ -174,7 +174,13 @@ class LogisticRegressionWithUnfairnessHater(BaseEstimator, ClassifierMixin):
         probabilities of the positive class given sensitive features
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
+    def __init__(
+        self,
+        C: float = 1.0,
+        eta: float = 1.0,
+        fit_intercept: bool = True,
+        penalty: str = "l2",
+    ) -> None:
 
         if C < 0.0:
             raise TypeError
@@ -227,7 +233,13 @@ class LogisticRegressionWithUnfairnessHaterType1(
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
+    def __init__(
+        self,
+        C: float = 1.0,
+        eta: float = 1.0,
+        fit_intercept: bool = True,
+        penalty: str = "l2",
+    ) -> None:
 
         super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
         lossfunc_type = 1
@@ -342,7 +354,13 @@ class LogisticRegressionWithUnfairnessHaterType2(
         fixed to 'l2'
     """
 
-    def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty="l2"):
+    def __init__(
+        self,
+        C: float = 1.0,
+        eta: float = 1.0,
+        fit_intercept: bool = True,
+        penalty: str = "l2",
+    ) -> None:
 
         super().__init__(C=C, eta=eta, fit_intercept=fit_intercept, penalty=penalty)
         lossfunc_type = 2
@@ -449,7 +467,7 @@ if not logger.handlers:
 # ==============================================================================
 
 
-def _test():
+def _test() -> None:
     """test function for this module"""
 
     # perform doctest

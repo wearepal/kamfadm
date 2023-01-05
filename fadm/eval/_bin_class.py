@@ -64,7 +64,7 @@ class BinClassStats:
         The number of total samples
     """
 
-    def __init__(self, tp, fn, fp, tn):
+    def __init__(self, tp, fn, fp, tn) -> None:
 
         self.n = np.empty((2, 2))
         self.n[1, 1] = float(tp)
@@ -84,7 +84,7 @@ class BinClassStats:
         ):
             raise ValueError("Illegal values are specified")
 
-    def negate(self):
+    def negate(self) -> None:
         """negate the meanings of positives and negatives"""
 
         self.n[1, 1], self.n[0, 0] = self.n[0, 0], self.n[1, 1]
@@ -111,7 +111,7 @@ class BinClassStats:
 
         return self.n[1, 1], self.n[1, 0], self.n[0, 1], self.n[0, 0]
 
-    def str_ct(self, header=True):
+    def str_ct(self, header: bool = True):
         """Strings for ct()
 
         Parameters
@@ -154,7 +154,7 @@ class BinClassStats:
 
         return self.c[1], self.c[0], self.e[1], self.e[0], self.t
 
-    def str_mct(self, header=True):
+    def str_mct(self, header: bool = True):
         """Strings for mct()
 
         Parameters
@@ -195,7 +195,7 @@ class BinClassStats:
 
         return acc, sd
 
-    def str_acc(self, header=True):
+    def str_acc(self, header: bool = True):
         """Strings for acc()
 
         Parameters
@@ -240,7 +240,7 @@ class BinClassStats:
 
         return jaccard, njaccard, dice, ndice
 
-    def str_jaccard(self, header=True):
+    def str_jaccard(self, header: bool = True):
         """Strings for jaccard()
 
         Parameters
@@ -297,7 +297,7 @@ class BinClassStats:
 
         return kldivc, kldive, kldivc2, kldive2
 
-    def str_kldiv(self, header=True):
+    def str_kldiv(self, header: bool = True):
         """Strings for kldiv()
 
         Parameters
@@ -365,7 +365,7 @@ class BinClassStats:
 
         return mi, nmic, nmie, (nmic + nmie) / 2.0, np.sqrt(nmic * nmie)
 
-    def str_mi(self, header=True):
+    def str_mi(self, header: bool = True):
         """Strings for mi()
 
         Parameters
@@ -429,7 +429,7 @@ class BinClassStats:
 
         return mi, nmic, nmie, (nmic + nmie) / 2.0, np.sqrt(nmic * nmie)
 
-    def str_mi2(self, header=True):
+    def str_mi2(self, header: bool = True):
         """Strings for mi2()
 
         Parameters
@@ -457,7 +457,7 @@ class BinClassStats:
 
         return pr
 
-    def prf(self, alpha=0.5):
+    def prf(self, alpha: float = 0.5):
         """Precision, recall, and F-measure
 
         Parameters
@@ -480,7 +480,7 @@ class BinClassStats:
 
         return p, r, f
 
-    def str_prf(self, alpha=0.5, header=True):
+    def str_prf(self, alpha: float = 0.5, header: bool = True):
         """Strings for prf()
 
         Parameters
@@ -527,7 +527,7 @@ class BinClassStats:
 
         return tuple(stats)
 
-    def str_all(self, header=True):
+    def str_all(self, header: bool = True):
         """Strings for all()
 
         Parameters
@@ -574,7 +574,7 @@ if not logger.handlers:
 # ==============================================================================
 
 
-def _test():
+def _test() -> None:
     """test function for this module"""
 
     # perform doctest

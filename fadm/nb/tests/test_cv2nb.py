@@ -8,7 +8,7 @@ import unittest
 
 
 class TestCaldersVerwerTwoNaiveBayes(unittest.TestCase):
-    def runTest(self):
+    def runTest(self) -> None:
         from fadm.nb.cv2nb import *
 
         # __init__

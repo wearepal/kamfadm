@@ -15,9 +15,12 @@ scikit-learn compatible interface
 # Imports
 # ==============================================================================
 
+from abc import abstractmethod
 import logging
 import numpy as np
+import numpy.typing as npt
 from sklearn.base import BaseEstimator, ClassifierMixin
+from typing import Sequence
 
 # ==============================================================================
 # Public symbols
@@ -46,7 +49,13 @@ __all__ = [
 class BayesianClassifierMixin:
     """Mix-in for Probabilistic Classifiers"""
 
-    def predict(self, X):
+    @abstractmethod
+    def _predict_log_proba_upto_const(
+        self, X: npt.NDArray[np.float32]
+    ) -> npt.NDArray[np.float32]:
+        ...
+
+    def predict(self, X: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
         """predict class
 
         Parameters
@@ -121,7 +130,9 @@ class BaseNaiveBayes(BaseEstimator, BayesianClassifierMixin, ClassifierMixin):
         class parameters
     """
 
-    def __init__(self, n_classes=2, n_features=1, alpha=1.0):
+    def __init__(
+        self, n_classes: int = 2, n_features: int = 1, alpha: float = 1.0
+    ) -> None:
         self.n_classes = n_classes
         self.n_features = n_features
         self.alpha = alpha
@@ -130,7 +141,7 @@ class BaseNaiveBayes(BaseEstimator, BayesianClassifierMixin, ClassifierMixin):
         # class param init
         self.py_ = np.repeat(self.alpha / float(self.n_classes), self.n_classes)
 
-    def _update_total_and_class_params(self, y, n_y_samples):
+    def _update_total_and_class_params(self, y: int, n_y_samples: int) -> None:
         """update a class pmf and the number of samples
 
         Parameters
@@ -183,12 +194,12 @@ class GaussianNaiveBayes(BaseNaiveBayes):
         element [y, x] is squared sum of features of x given class c
     """
 
-    def __init__(self, n_classes, n_gfeatures, alpha=1.0):
+    def __init__(self, n_classes: int, n_gfeatures: int, alpha: float = 1.0) -> None:
 
         super().__init__(n_classes, n_gfeatures, alpha)
         self._init_Gaussian_naive_Bayes(n_gfeatures)
 
-    def _init_Gaussian_naive_Bayes(self, n_gfeatures):
+    def _init_Gaussian_naive_Bayes(self, n_gfeatures: int) -> None:
         """init Gaussian naive Bayes parameters
 
         Parameters
@@ -206,7 +217,7 @@ class GaussianNaiveBayes(BaseNaiveBayes):
         self.x_mean_ = np.empty((self.n_classes, self.n_gfeatures))
         self.x_var_ = np.empty((self.n_classes, self.n_gfeatures))
 
-    def _update_Gaussian_params(self, X, yi):
+    def _update_Gaussian_params(self, X, yi) -> None:
         """update model parameters
 
         Parameters
@@ -224,7 +235,7 @@ class GaussianNaiveBayes(BaseNaiveBayes):
         self._x_sqsum[yi, :] += np.sum(finite_X**2, axis=0)
         self.is_valid_params_ = False
 
-    def partial_fit(self, X, y):
+    def partial_fit(self, X, y) -> None:
         """update model given one example
 
         Parameters
@@ -242,7 +253,7 @@ class GaussianNaiveBayes(BaseNaiveBayes):
             self._update_total_and_class_params(yi, n_y_samples[yi])
             self._update_Gaussian_params(X[y == yi, :], yi)
 
-    def fit(self, X, y):
+    def fit(self, X, y) -> None:
         """update model given one example
 
         Parameters
@@ -285,7 +296,7 @@ class GaussianNaiveBayes(BaseNaiveBayes):
 
         return log_proba
 
-    def _update_mean_var(self):
+    def _update_mean_var(self) -> None:
         """update internal mean and variance parameters"""
 
         self.f_valid_ = np.all(self.n_valid_samples_ > 1, axis=0)
@@ -371,12 +382,21 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
     fitting, but it is ignored in prediction.
     """
 
-    def __init__(self, n_classes, n_mfeatures, nfv, alpha=1.0, beta=1.0):
+    def __init__(
+        self,
+        n_classes: int,
+        n_mfeatures: int,
+        nfv: Sequence[int],
+        alpha: float = 1.0,
+        beta: float = 1.0,
+    ) -> None:
         # init base class
         super().__init__(n_classes, n_mfeatures, alpha)
         self._init_Multinomial_naive_Bayes(n_mfeatures, np.array(nfv), beta)
 
-    def _init_Multinomial_naive_Bayes(self, n_mfeatures, nfv, beta):
+    def _init_Multinomial_naive_Bayes(
+        self, n_mfeatures: int, nfv: npt.NDArray[np.int64], beta: float
+    ) -> None:
         """init Multinomial naive Bayes parameters
 
         Parameters
@@ -401,7 +421,7 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
                 ).reshape((self.n_classes, self.nfv[i]))
             )
 
-    def _update_Multinomial_params(self, X, y):
+    def _update_Multinomial_params(self, X, y) -> None:
         """update model parameters
 
         Parameters
@@ -420,7 +440,7 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
                 range=((0, self.n_classes), (0, self.nfv[fi])),
             )[0]
 
-    def partial_fit(self, X, y):
+    def partial_fit(self, X, y) -> None:
         """update model given one example
 
         Parameters
@@ -441,7 +461,7 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
         # update the feature parameter
         self._update_Multinomial_params(X, y)
 
-    def fit(self, X, y):
+    def fit(self, X, y) -> None:
         """update model given one example
 
         Parameters
@@ -535,19 +555,26 @@ class CompositeNaiveBayes(MultinomialNaiveBayes, GaussianNaiveBayes):
     fitting, but it is ignored in prediction.
     """
 
-    def __init__(self, n_classes, n_features, nfv, alpha=1.0, beta=1.0):
+    def __init__(
+        self,
+        n_classes: int,
+        n_features: int,
+        nfv: Sequence[int],
+        alpha: float = 1.0,
+        beta: float = 1.0,
+    ) -> None:
 
-        nfv = np.array(nfv)
-        self.gfeatures = nfv == 0
-        self.mfeatures = nfv >= 2
+        nfv_ = np.array(nfv)
+        self.gfeatures = nfv_ == 0
+        self.mfeatures = nfv_ >= 2
 
         BaseNaiveBayes.__init__(self, n_classes, n_features, alpha)
         self._init_Gaussian_naive_Bayes(np.sum(self.gfeatures))
         self._init_Multinomial_naive_Bayes(
-            np.sum(self.mfeatures), nfv[self.mfeatures], beta
+            np.sum(self.mfeatures), nfv_[self.mfeatures], beta
         )
 
-    def partial_fit(self, X, y):
+    def partial_fit(self, X, y) -> None:
         """update model given one example
 
         Parameters
@@ -574,7 +601,7 @@ class CompositeNaiveBayes(MultinomialNaiveBayes, GaussianNaiveBayes):
         if self.n_mfeatures:
             self._update_Multinomial_params(X[:, self.mfeatures], y)
 
-    def fit(self, X, y):
+    def fit(self, X, y) -> None:
         """update model given one example
 
         Parameters
@@ -670,7 +697,7 @@ if not logger.handlers:
 # ==============================================================================
 
 
-def _test():
+def _test() -> None:
     """test function for this module"""
 
     # perform doctest

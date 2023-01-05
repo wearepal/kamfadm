@@ -164,7 +164,7 @@ def read_01_file(opt):
 # ==============================================================================
 
 
-def main(opt):
+def main(opt) -> None:
     """Main routine that exits with status code 0"""
 
     ### main process
