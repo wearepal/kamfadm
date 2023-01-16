@@ -58,6 +58,7 @@ __docformat__ = "restructuredtext en"
 # Imports
 # ==============================================================================
 
+from io import BufferedReader, TextIOWrapper
 import sys
 import argparse
 import os
@@ -90,6 +91,14 @@ N_NS = 1
 # ==============================================================================
 # Classes
 # ==============================================================================
+class Options:
+    verbose: bool
+    rseed: int
+    infile: TextIOWrapper
+    outfile: TextIOWrapper
+    model: BufferedReader
+    ns: bool
+    info: bool
 
 # ==============================================================================
 # Functions
@@ -100,7 +109,7 @@ N_NS = 1
 # ==============================================================================
 
 
-def main(opt) -> None:
+def main(opt: Options) -> None:
     """Main routine that exits with status code 0"""
 
     ### pre process
@@ -183,9 +192,6 @@ def main(opt) -> None:
     if opt.outfile != sys.stdout:
         opt.outfile.close()
 
-    if opt.model != sys.stdout:
-        opt.model.close()
-
     sys.exit(0)
 
 
@@ -240,14 +246,15 @@ if __name__ == "__main__":
     )
 
     # script specific options
-    ap.add_argument("-m", "--model", type=argparse.FileType("r"), required=True)
+    ap.add_argument("-m", "--model", type=argparse.FileType("rb"), required=True)
     ap.set_defaults(ns=False)
     ap.add_argument("--ns", dest="ns", action="store_true")
     ap.set_defaults(info=True)
     ap.add_argument("--hideinfo", dest="info", action="store_false")
 
     # parsing
-    opt = ap.parse_args()
+    opt = Options()
+    ap.parse_args(namespace=opt)
 
     # post-processing for command-line options
     # disable logging messages by changing logging level

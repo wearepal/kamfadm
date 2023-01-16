@@ -60,6 +60,7 @@ __docformat__ = "restructuredtext en"
 # ==============================================================================
 
 
+from io import BufferedWriter, TextIOWrapper
 import sys
 import argparse
 import os
@@ -68,6 +69,7 @@ import subprocess
 import logging
 import datetime
 import pickle
+from typing import List, Literal
 import numpy as np
 
 # private modeules ------------------------------------------------------------
@@ -109,13 +111,31 @@ N_NS = 1
 # ==============================================================================
 # Classes
 # ==============================================================================
+class Options:
+    verbose: bool
+    rseed: int
+    infile: TextIOWrapper
+    outfile: BufferedWriter
+    C: float
+    eta: float
+    ltype: Literal[4, 5, 6, 7, 8, 9, 10, 11]
+    itype: int
+    ns: bool
+    ntry: int
+    script_name: str
+    script_version: str
+    python_version: str
+    sys_uname: platform.uname_result
+    sys_info: List[str]
+    start_time: str
+
 
 # ==============================================================================
 # Functions
 # ==============================================================================
 
 
-def train(X, y, ns, opt):
+def train(X, y, ns: int, opt: Options):
     """train model
 
     Parameters
@@ -169,7 +189,7 @@ def train(X, y, ns, opt):
 # ==============================================================================
 
 
-def main(opt) -> None:
+def main(opt: Options) -> None:
     """Main routine that exits with status code 0"""
 
     ### pre process
@@ -253,11 +273,8 @@ def main(opt) -> None:
     ### post process
 
     # close file
-    if opt.infile is not sys.stdin:
+    if opt.infile != sys.stdin:
         opt.infile.close()
-
-    if opt.outfile is not sys.stdout:
-        opt.outfile.close()
 
     sys.exit(0)
 
@@ -302,14 +319,7 @@ if __name__ == "__main__":
         type=argparse.FileType("r"),
     )
     ap.add_argument(
-        "-o", "--out", dest="outfile", default=None, type=argparse.FileType("w")
-    )
-    ap.add_argument(
-        "outfilep",
-        nargs="?",
-        metavar="OUTFILE",
-        default=sys.stdout,
-        type=argparse.FileType("w"),
+        "-o", "--out", dest="outfile", type=argparse.FileType("wb"), required=True
     )
 
     # script specific options
@@ -323,7 +333,8 @@ if __name__ == "__main__":
     ap.add_argument("-t", "--try", dest="ntry", type=int, default=0)
 
     # parsing
-    opt = ap.parse_args()
+    opt = Options()
+    ap.parse_args(namespace=opt)
 
     # post-processing for command-line options
     # disable logging messages by changing logging level
@@ -338,9 +349,6 @@ if __name__ == "__main__":
         opt.infile = opt.infilep
     del vars(opt)["infilep"]
     logger.info("input_file = " + opt.infile.name)
-    if opt.outfile is None:
-        opt.outfile = opt.outfilep
-    del vars(opt)["outfilep"]
     logger.info("output_file = " + opt.outfile.name)
 
     ### set meta-data of script and machine

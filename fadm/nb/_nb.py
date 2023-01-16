@@ -417,7 +417,7 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
         for i in range(self.n_mfeatures):
             self.pf_.append(
                 np.repeat(
-                    self.beta / np.float(self.nfv[i]), self.n_classes * self.nfv[i]
+                    self.beta / np.float64(self.nfv[i]), self.n_classes * self.nfv[i]
                 ).reshape((self.n_classes, self.nfv[i]))
             )
 
